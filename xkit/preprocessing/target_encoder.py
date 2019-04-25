@@ -1,6 +1,6 @@
 '''
 -------------------------------------------------------
-    extrakit-learn
+    Target Encoder - extrakit-learn
 
     Author: Simon Larsson <larssonsimon0@gmail.com>
 
@@ -31,7 +31,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
         Parameters
         ----------
         X : array-like, shape (n_samples,)
-            The target values. An array of int.
+            The class values. An array of int.
 
         y : array-like, shape (n_samples,)
             The target values. An array of int.
@@ -55,7 +55,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
 
         if self.smoothing != 0:
 
-            #                 class_counts * class_means + smoothing * global mean
+            #                 class_counts x class_means + smoothing x global mean
             #  smooth mean =  ----------------------------------------------------
             #                           (class_counts + smoothing)
 
@@ -79,12 +79,12 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
         Parameters
         ----------
         X : array-like, shape (n_samples,)
-            The target values. An array of int.
+            The class values. An array of int.
 
         Returns
         -------
         X : array-like, shape (n_samples,)
-            The target values. An array of int.
+            The encoded values. An array of float.
         '''
 
         # Check is fit had been called
@@ -112,7 +112,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
         Parameters
         ----------
         X : array-like, shape (n_samples,)
-            The target values. An array of int.
+            The class values. An array of int.
 
         y : array-like, shape (n_samples,)
             The target values. An array of int.
@@ -120,7 +120,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
         Returns
         -------
         X : array-like, shape (n_samples,)
-            The target values. An array of int.
+            The encoded values. An array of float.
         '''
 
         X = column_or_1d(X, warn=True)
@@ -136,7 +136,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
 
         if self.smoothing != 0:
 
-            #                 class_counts * class_means + smoothing * global mean
+            #                 class_counts x class_means + smoothing x global mean
             #  smooth mean =  ----------------------------------------------------
             #                           (class_counts + smoothing)
 
