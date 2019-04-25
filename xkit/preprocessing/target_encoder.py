@@ -62,9 +62,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
             self.class_means_ = (counts * self.class_means_ + self.smoothing * target_mean)\
                                 / (counts + self.smoothing)
 
-        self.lut = np.concatenate([self.classes_.reshape(-1, 1),
-                                   self.class_means_.reshape(-1, 1)],
-                                  axis=1)
+        self.lut = np.hstack([self.classes_.reshape(-1, 1), self.class_means_.reshape(-1, 1)])
 
         if self.class_means_.shape[0] != np.unique(self.class_means_).shape[0]:
             warn('Duplicate target encoding for muliple classes. This will '
@@ -143,9 +141,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
             self.class_means_ = (counts * self.class_means_ + self.smoothing * target_mean) \
                                 / (counts + self.smoothing)
 
-        self.lut = np.concatenate([self.classes_.reshape(-1, 1),
-                                   self.class_means_.reshape(-1, 1)],
-                                  axis=1)
+        self.lut = np.hstack([self.classes_.reshape(-1, 1), self.class_means_.reshape(-1, 1)])
 
         if self.class_means_.shape[0] != np.unique(self.class_means_).shape[0]:
             warn('Duplicate target encoding for muliple classes. This will '
