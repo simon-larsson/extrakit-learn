@@ -25,7 +25,7 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
 
     meta_clf : Ensemble classifier that makes the final output, classifier
 
-    keep_features : If original input features should be used in meta_clf, bool
+    keep_features : If original input features should be used by meta_clf, bool
 
     refit : If sub-classifiers should be refit, bool
     '''
@@ -112,7 +112,7 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
         X = check_array(X, accept_sparse=True)
 
         # Check that it has previously been fit
-        check_is_fitted(self, 'is_fitted_')
+        check_is_fitted(self, 'n_features_')
 
         # Perform prediction
         X_meta = build_meta_X(self.clfs, X, self.keep_features)
@@ -131,7 +131,7 @@ def build_meta_X(clfs, X=None, keep_features=True):
 
     Returns
     -------
-    X_meta : {array-like, sparse matrix}, shape (n_samples, n_features + n_sub_clfs)
+    X_meta : {array-like, sparse matrix}, shape (n_samples, n_features + n_clfs*classes)
                  The prediction input samples for the meta clf.
     '''
 
