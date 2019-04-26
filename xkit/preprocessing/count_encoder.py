@@ -83,8 +83,8 @@ class CountEncoder(BaseEstimator, TransformerMixin):
         unseen_mask = list(np.where(np.isin(X, self.classes_, invert=True))[0])
 
         if unseen_mask:
-            warn('Unseen value at index {} will be encoded to default value'\
-                .format(unseen_mask[0]))
+            warn('Unseen or nan value at index {} will be encoded to default value'\
+                .format(unseen_mask))
 
         X = np.take(self.lut[:, 1], \
                     np.take(np.searchsorted(self.lut[:, 0], self.classes_), indices))
