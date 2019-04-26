@@ -48,7 +48,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
         target_mean = np.mean(y)
 
         self.classes_, counts = np.unique(X, return_counts=True)
-        self.class_means_ = np.zeros_like(self.classes_, dtype='float32')
+        self.class_means_ = np.zeros_like(self.classes_, dtype='float64')
 
         for i, c in enumerate(self.classes_):
             self.class_means_[i] = np.mean(y[np.where(X == c)])
@@ -127,7 +127,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
         target_mean = np.mean(y)
 
         self.classes_, indices, counts = np.unique(X, return_inverse=True, return_counts=True)
-        self.class_means_ = np.zeros_like(self.classes_, dtype='float32')
+        self.class_means_ = np.zeros_like(self.classes_, dtype='float64')
 
         for i, c in enumerate(self.classes_):
             self.class_means_[i] = np.mean(y[np.where(X == c)])

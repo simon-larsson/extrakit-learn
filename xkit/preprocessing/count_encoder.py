@@ -90,7 +90,7 @@ class CountEncoder(BaseEstimator, TransformerMixin):
                     np.take(np.searchsorted(self.lut[:, 0], self.classes_), indices))
 
         if self.one_to_nan:
-            X = X.astype('float32')
+            X = X.astype('float64')
             X[unseen_mask] = np.nan
             X[np.where(X == 1.0)] = np.nan
         else:
