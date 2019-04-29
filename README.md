@@ -3,9 +3,7 @@
 Machine learnings components built to extend scikit-learn. All components use scikit's [object API](https://scikit-learn.org/stable/developers/contributing.html#apis-of-scikit-learn-objects) to work interchangably with scikit components.
 
 ### TargetEncoder
-Performs target mean encoding of categorical features. Performs optional smoothing of means with:
-
-$$means_{smooth} = \frac {counts_{class} \cdot means_{class} + smoothing \cdot mean_{global}}{smoothing \cdot counts_{class}}$$
+Performs target mean encoding of categorical features with optional smoothing.
 
 #### Arguments
 `smoothing` - Smoothing weight.
@@ -34,8 +32,11 @@ Ensemble classifier that stacks an ensemble of classifiers by using their output
 
 #### Arguments
 `clfs` - List of ensemble of classifiers.
+
 `meta_clf` - Meta classifier that stacks the predictions of the ensemble.
+
 `keep_features` - Flag to train the meta classifier on the original features too.
+
 `refit` - Flag to retrain the ensemble of classifiers.
 
 #### Example:
@@ -52,8 +53,11 @@ Ensemble regressor that stacks an ensemble of regressors by using their outputs 
 
 #### Arguments
 `regs` - List of ensemble of regressors.
+
 `meta_reg` - Meta regressor that stacks the predictions of the ensemble.
+
 `keep_features` - Flag to train the meta regressor on the original features too.
+
 `refit` - Flag to retrain the ensemble of regressors.
 
 #### Example:
