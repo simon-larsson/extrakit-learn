@@ -8,7 +8,7 @@ Performs target mean encoding of categorical features. Performs optional smoothi
 $$means_{smooth} = \frac {counts_{class} \cdot means_{class} + smoothing \cdot mean_{global}}{smoothing \cdot counts_{class}}$$
 
 #### Arguments
-```smoothing``` - Smoothing weight.
+`smoothing` - Smoothing weight.
 #### Example:
 
 ```python
@@ -20,7 +20,7 @@ X[0] = te.fit_transform(X[0], y)
 Replaces categorical values with their respective value count during training. Classes with a count of one and previously unseen classes during prediction are encoded as either one or nan.
 
 #### Arguments
-```one_to_nan``` - Flag for using nans instead of ones for unseen/single classes.
+`one_to_nan` - Flag for using nans instead of ones for unseen/single classes.
 
 #### Example:
 ```python
@@ -31,11 +31,12 @@ X[0] = ce.fit_transform(X[0], y)
 ### StackingClassifier
 Ensemble classifier that stacks an ensemble of classifiers by using their outputs as input features.
 
+
 #### Arguments
-```clfs``` - List of ensemble of classifiers
-```meta_clf``` - Meta classifier that stacks the predictions 
-```keep_features``` - Flag to train the meta classifier on the original features too
-```refit``` - Flag to retrain the ensemble of classifiers
+`clfs` - List of ensemble of classifiers.
+`meta_clf` - Meta classifier that stacks the predictions of the ensemble.
+`keep_features` - Flag to train the meta classifier on the original features too.
+`refit` - Flag to retrain the ensemble of classifiers.
 
 #### Example:
 ```python
@@ -50,10 +51,10 @@ y_ = stack_clf.predict(X_test)
 Ensemble regressor that stacks an ensemble of regressors by using their outputs as input features.
 
 #### Arguments
-```regs``` - List of ensemble of regressors
-```meta_reg``` - Meta regressor that stacks the predictions 
-```keep_features``` - Flag to train the meta regressor on the original features too
-```refit``` - Flag to retrain the ensemble of regressors
+`regs` - List of ensemble of regressors.
+`meta_reg` - Meta regressor that stacks the predictions of the ensemble.
+`keep_features` - Flag to train the meta regressor on the original features too.
+`refit` - Flag to retrain the ensemble of regressors.
 
 #### Example:
 ```python
