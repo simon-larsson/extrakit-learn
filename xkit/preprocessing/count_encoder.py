@@ -52,8 +52,7 @@ class CountEncoder(BaseEstimator, TransformerMixin):
 
         self.classes_ = np.append(self.classes_, [-1])
         self.counts_ = np.append(self.counts_, [1])
-
-        self.lut = self.lut = np.hstack([self.classes_.reshape(-1, 1), self.counts_.reshape(-1, 1)])
+        self.lut_ = np.hstack([self.classes_.reshape(-1, 1), self.counts_.reshape(-1, 1)])
 
         # `fit` should always return `self`
         return self
@@ -72,10 +71,7 @@ class CountEncoder(BaseEstimator, TransformerMixin):
             The count values. An array of int/float.
         '''
 
-        # Check is fit had been called
         check_is_fitted(self, 'classes_')
-
-        # Input validation
         X = column_or_1d(X, warn=True)
 
         _, indices = np.unique(X, return_inverse=True)
@@ -86,8 +82,9 @@ class CountEncoder(BaseEstimator, TransformerMixin):
             warn('Unseen or nan value at index {} will be encoded to default value'\
                 .format(unseen_mask))
 
-        X = np.take(self.lut[:, 1], \
-                    np.take(np.searchsorted(self.lut[:, 0], self.classes_), indices))
+        # Perform replacement with lookup
+        X = np.take(self.lut_[:, 1], \
+                    np.take(np.searchsorted(self.lut_[:, 0], self.classes_), indices))
 
         if self.one_to_nan:
             X = X.astype('float64')

@@ -62,7 +62,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
             self.class_means_ = (counts * self.class_means_ + self.smoothing * target_mean)\
                                 / (counts + self.smoothing)
 
-        self.lut = np.hstack([self.classes_.reshape(-1, 1), self.class_means_.reshape(-1, 1)])
+        self.lut_ = np.hstack([self.classes_.reshape(-1, 1), self.class_means_.reshape(-1, 1)])
 
         if self.class_means_.shape[0] != np.unique(self.class_means_).shape[0]:
             warn('Duplicate target encoding for muliple classes. This will '
@@ -85,10 +85,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
             The encoded values. An array of float.
         '''
 
-        # Check is fit had been called
         check_is_fitted(self, 'class_means_')
-
-        # Input validation
         X = column_or_1d(X, warn=True)
 
         classes, indices = np.unique(X, return_inverse=True)
@@ -99,8 +96,9 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
         if diff:
             raise ValueError('X contains previously unseen classes: %s' % str(diff))
 
-        X = np.take(self.lut[:, 1], \
-                    np.take(np.searchsorted(self.lut[:, 0], self.classes_), indices))
+        # Perform replacement with lookup
+        X = np.take(self.lut_[:, 1], \
+                    np.take(np.searchsorted(self.lut_[:, 0], self.classes_), indices))
 
         return X
 
@@ -147,7 +145,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
             warn('Duplicate target encoding for muliple classes. This will '
                  'make two or more categories indistinguishable.')
 
-        X = np.take(self.lut[:, 1], \
-                    np.take(np.searchsorted(self.lut[:, 0], self.classes_), indices))
+        X = np.take(self.lut_[:, 1], \
+                    np.take(np.searchsorted(self.lut_[:, 0], self.classes_), indices))
 
         return X
