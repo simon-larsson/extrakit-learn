@@ -55,15 +55,17 @@ class StackingRegressor(BaseEstimator, ClassifierMixin):
 
         X, y = check_X_y(X, y, accept_sparse=True)
 
-        # fitting
+        # Refit of regressor ensemble
         if self.refit:
             for reg in self.regs:
                 reg.fit(X, y)
 
+        # Build new tier-2 features
         X_meta = build_meta_X(self.regs, X, self.keep_features)
+
+        # Fit meta regressor, stacking the ensemble
         self.meta_reg.fit(X_meta, y)
 
-        # set attributes
         self.n_features_ = X.shape[1]
         self.n_meta_features_ = X_meta.shape[1]
         self.n_regs = len(self.regs)
@@ -84,13 +86,10 @@ class StackingRegressor(BaseEstimator, ClassifierMixin):
             Returns an array of classifications, bools.
         '''
 
-        # Perform input validation
         X = check_array(X, accept_sparse=True)
-
-        # Check that it has previously been fit
         check_is_fitted(self, 'n_features_')
 
-        # Perform prediction
+        # Build new tier-2 features
         X_meta = build_meta_X(self.regs, X, self.keep_features)
 
         return self.meta_reg.predict(X_meta)

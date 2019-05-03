@@ -55,12 +55,15 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
 
         X, y = check_X_y(X, y, accept_sparse=True)
 
-        # fitting
+        # Refit of classifier ensemble
         if self.refit:
             for clf in self.clfs:
                 clf.fit(X, y)
 
+        # Build new tier-2 features
         X_meta = build_meta_X(self.clfs, X, self.keep_features)
+
+        # Fit meta classifer, stacking the ensemble
         self.meta_clf.fit(X_meta, y)
 
         # set attributes
@@ -83,13 +86,11 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
         y : ndarray, shape (n_samples,)
             Returns an array of probabilities, floats.
         '''
-        # Perform input validation
-        X = check_array(X, accept_sparse=True)
 
-        # Check that it has previously been fit
+        X = check_array(X, accept_sparse=True)
         check_is_fitted(self, 'n_features_')
 
-        # Perform prediction
+        # Build new tier-2 features
         X_meta = build_meta_X(self.clfs, X, self.keep_features)
 
         return self.meta_clf.predict_proba(X_meta)
@@ -108,13 +109,10 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
             Returns an array of classifications, bools.
         '''
 
-        # Perform input validation
         X = check_array(X, accept_sparse=True)
-
-        # Check that it has previously been fit
         check_is_fitted(self, 'n_features_')
 
-        # Perform prediction
+        # Build new tier-2 features
         X_meta = build_meta_X(self.clfs, X, self.keep_features)
 
         return self.meta_clf.predict(X_meta)
