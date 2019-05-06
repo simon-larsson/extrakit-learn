@@ -29,7 +29,7 @@ class FoldEstimator(BaseEstimator):
 
     regressor : Flag when using a regressor instead of a classifier, bool
 
-    proba : Flag to use predict_proba instead of predict during fit, bool
+    proba : Flag to use `predict_proba` for metric during fit, bool
 
     ensemble : Flag for post fit behaviour
                 True: Continue as a ensemble trained on separate folds
@@ -90,10 +90,8 @@ class FoldEstimator(BaseEstimator):
             self.oof_y_ = np.zeros_like(y)
 
         current_fold = 1
-        # Iterate over folds
         for fold_idx, oof_idx in self.fold.split(X, y):
 
-            # Prepare fold
             X_fold, y_fold = X[fold_idx], y[fold_idx]
             X_oof, y_oof = X[oof_idx], y[oof_idx]
 
@@ -186,6 +184,7 @@ class FoldEstimator(BaseEstimator):
         X = check_array(X, accept_sparse=True)
         check_is_fitted(self, 'n_features_')
 
+        
         if self.regressor and self.ensemble:
 
             y_ = np.zeros((X.shape[0],), dtype=np.float64)
