@@ -7,6 +7,7 @@
     License: MIT
 -------------------------------------------------------
 '''
+
 from warnings import warn
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.validation import column_or_1d, check_is_fitted
@@ -19,10 +20,36 @@ class CountEncoder(BaseEstimator, TransformerMixin):
 
     Parameters
     ----------
-    one_to_nan : Flag for replacing one counts with np.nan, bool
+    unseen : Replacement strategy for unseen values [`one`, `nan`, `error`], str
+
+    missing : Replacement strategy for missing values [`one`, `nan`, `error`], str
     '''
-    def __init__(self, one_to_nan=False):
-        self.one_to_nan = one_to_nan
+
+    def __init__(self, unseen='one', missing='one'):
+        replace_strats = ['one', 'nan', 'error']
+
+        if unseen not in replace_strats:
+            raise ValueError('Value of `unseen` {} is not a valid replacement '
+                             'strategy, {}'.format(unseen, replace_strats))
+
+        if missing not in replace_strats:
+            raise ValueError('Value of `missing` {} is not a valid replacement '
+                             'strategy, {}'.format(missing, replace_strats))
+
+        if unseen == 'one':
+            self.default_unseen = 1
+        elif unseen == 'nan':
+            self.default_unseen = np.nan
+
+        if missing == 'one':
+            self.default_missing = 1
+        elif missing == 'nan':
+            self.default_missing = np.nan
+
+        self.requires_float = missing == 'nan' or unseen == 'nan'
+
+        self.unseen = unseen
+        self.missing = missing
 
     def fit(self, X, y=None):
         ''' Fitting of the transformer
@@ -44,6 +71,14 @@ class CountEncoder(BaseEstimator, TransformerMixin):
 
         X = column_or_1d(X, warn=True)
 
+        if self.requires_float:
+            X = X.astype('float64')
+
+        if self.missing == 'error' and np.isnan(X).any():
+            error_index = list(np.where(np.isnan(X))[0])
+            raise ValueError('Missing value found at index {}. Aborting '
+                             'according to set strategy'.format(error_index))
+
         self.classes_, self.counts_ = np.unique(X, return_counts=True)
 
         if self.classes_.shape[0] != np.unique(self.counts_).shape[0]:
@@ -51,8 +86,9 @@ class CountEncoder(BaseEstimator, TransformerMixin):
                  'make two or more categories indistinguishable.')
 
         self.classes_ = np.append(self.classes_, [-1])
-        self.counts_ = np.append(self.counts_, [1])
-        self.lut_ = np.hstack([self.classes_.reshape(-1, 1), self.counts_.reshape(-1, 1)])
+        self.counts_ = np.append(self.counts_, [self.default_unseen])
+        self.lut_ = np.hstack([self.classes_.reshape(-1, 1),
+                               self.counts_.reshape(-1, 1)])
 
         # `fit` should always return `self`
         return self
@@ -74,23 +110,29 @@ class CountEncoder(BaseEstimator, TransformerMixin):
         check_is_fitted(self, 'classes_')
         X = column_or_1d(X, warn=True)
 
+        if self.requires_float:
+            X = X.astype('float64')
+
+        missing_mask = np.isnan(X)
+        unseen_mask = np.isin(X, self.classes_, invert=True)
+
+        if unseen_mask.any() and self.unseen == 'error':
+            error_index = list(np.where(unseen_mask)[0])
+            raise ValueError('Unseen value found at index {}. Aborting '
+                             'according to set strategy'.format(error_index))
+
+        if missing_mask.any() and self.missing == 'error':
+            error_index = list(np.where(missing_mask)[0])
+            raise ValueError('Missing value found at index {}. Aborting '
+                             'according to set strategy'.format(error_index))
+
         _, indices = np.unique(X, return_inverse=True)
-
-        unseen_mask = list(np.where(np.isin(X, self.classes_, invert=True))[0])
-
-        if unseen_mask:
-            warn('Unseen or nan value at index {} will be encoded to default value'\
-                .format(unseen_mask))
 
         # Perform replacement with lookup
         X = np.take(self.lut_[:, 1], \
-                    np.take(np.searchsorted(self.lut_[:, 0], self.classes_), indices))
+                    np.take(np.searchsorted(self.lut_[:, 0], self.classes_),
+                            indices))
 
-        if self.one_to_nan:
-            X = X.astype('float64')
-            X[unseen_mask] = np.nan
-            X[np.where(X == 1.0)] = np.nan
-        else:
-            X[unseen_mask] = 1
+        X[missing_mask] = self.default_missing
 
         return X
