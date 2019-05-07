@@ -36,10 +36,6 @@ Meta estimator that performs cross validation over k folds. Can optionally be us
 
 `metric` - Evaluation metric.
 
-`regressor` - Flag indicating regression
-
-`proba_metric` - Flag indicting that metric wants probability
-
 `ensemble` - Flag indicting that the estimator should be a stacked ensemble after fit
 
 `verbose` - Flag for printing intermediate scores during fit
