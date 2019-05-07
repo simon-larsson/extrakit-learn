@@ -109,7 +109,7 @@ class FoldLGBM(BaseEstimator):
             lgbm.fit(X_fold, y_fold,
                      sample_weight=self.fit_params.get('sample_weight'),
                      init_score=self.fit_params.get('init_score'),
-                     eval_set=self.fit_params.get('eval_set', (X_oof, y_oof)),
+                     eval_set=(X_oof, y_oof),
                      eval_names=self.fit_params.get('eval_names'),
                      eval_sample_weight=self.fit_params.get('eval_sample_weight'),
                      eval_init_score=self.fit_params.get('eval_init_score'),
