@@ -7,6 +7,7 @@
     License: MIT
 -------------------------------------------------------
 '''
+
 from warnings import warn
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.validation import column_or_1d, check_is_fitted
@@ -20,9 +21,27 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
     Parameters
     ----------
     smoothing : Smooth means by weighting target mean, float
+
+    unseen : Replacement strategy for unseen values, str
+             One of ['global', 'nan', 'error']
+
+    missing : Replacement strategy for missing values, str
+              One of ['global', 'nan', 'error']
     '''
 
-    def __init__(self, smoothing=0):
+    def __init__(self, smoothing=0, unseen='global', missing='global'):
+        replace_strats = ['global', 'nan', 'error']
+
+        if unseen not in replace_strats:
+            raise ValueError('Value of `unseen` {} is not a valid replacement '
+                             'strategy, {}'.format(unseen, replace_strats))
+
+        if missing not in replace_strats:
+            raise ValueError('Value of `missing` {} is not a valid replacement '
+                             'strategy, {}'.format(missing, replace_strats))
+
+        self.unseen = unseen
+        self.missing = missing
         self.smoothing = smoothing
 
     def fit(self, X, y):
@@ -45,13 +64,33 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
         X = column_or_1d(X, warn=True)
         y = column_or_1d(y, warn=True)
 
+        if self.missing == 'error' and np.isnan(X).any():
+            error_index = list(np.where(np.isnan(X))[0])
+            raise ValueError('Missing value found at index {}. Aborting '
+                             'according to set strategy'.format(error_index))
+
         target_mean = np.mean(y)
+
+        if self.unseen == 'global':
+            self.default_unseen_ = target_mean
+        elif self.unseen == 'nan':
+            self.default_unseen_ = np.nan
+
+        if self.missing == 'global':
+            self.default_missing_ = target_mean
+        elif self.missing == 'nan':
+            self.default_missing_ = np.nan
 
         self.classes_, counts = np.unique(X, return_counts=True)
         self.class_means_ = np.zeros_like(self.classes_, dtype='float64')
 
         for i, c in enumerate(self.classes_):
-            self.class_means_[i] = np.mean(y[np.where(X == c)])
+            class_mask = np.where(X == c)
+
+            if class_mask[0].shape[0] > 0:
+                self.class_means_[i] = np.mean(y[class_mask])
+            else:
+                self.class_means_[i] = 1.0
 
         if self.smoothing != 0:
 
@@ -62,7 +101,8 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
             self.class_means_ = (counts * self.class_means_ + self.smoothing * target_mean)\
                                 / (counts + self.smoothing)
 
-        self.lut_ = np.hstack([self.classes_.reshape(-1, 1), self.class_means_.reshape(-1, 1)])
+        self.lut_ = np.hstack([self.classes_.reshape(-1, 1),
+                               self.class_means_.reshape(-1, 1)])
 
         if self.class_means_.shape[0] != np.unique(self.class_means_).shape[0]:
             warn('Duplicate target encoding for muliple classes. This will '
@@ -90,15 +130,24 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
 
         classes, indices = np.unique(X, return_inverse=True)
 
-        # Check if unique values match
-        diff = list(np.setdiff1d(classes, self.classes_))
+        missing_mask = np.isnan(X)
+        unseen_index = list(np.setdiff1d(classes, self.classes_))
 
-        if diff:
-            raise ValueError('X contains previously unseen classes: %s' % str(diff))
+        if missing_mask.any() and self.missing == 'error':
+            error_index = list(np.where(missing_mask)[0])
+            raise ValueError('Missing value found at index {}. Aborting '
+                             'according to set strategy'.format(error_index))
+
+        if self.unseen == 'error' and unseen_index:
+            raise ValueError('X contains previously unseen classes at index '\
+                             .format(unseen_index))
 
         # Perform replacement with lookup
         X = np.take(self.lut_[:, 1], \
-                    np.take(np.searchsorted(self.lut_[:, 0], self.classes_), indices))
+                    np.take(np.searchsorted(self.lut_[:, 0], self.classes_),
+                            indices))
+
+        X[missing_mask] = self.default_missing_
 
         return X
 
@@ -122,13 +171,40 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
         X = column_or_1d(X, warn=True)
         y = column_or_1d(y, warn=True)
 
+        if self.missing == 'error' and np.isnan(X).any():
+            error_index = list(np.where(np.isnan(X))[0])
+            raise ValueError('Missing value found at index {}. Aborting '
+                             'according to set strategy'.format(error_index))
+
         target_mean = np.mean(y)
+
+        if self.unseen == 'global':
+            self.default_unseen_ = target_mean
+        elif self.unseen == 'nan':
+            self.default_unseen_ = np.nan
+
+        if self.missing == 'global':
+            self.default_missing_ = target_mean
+        elif self.missing == 'nan':
+            self.default_missing_ = np.nan
 
         self.classes_, indices, counts = np.unique(X, return_inverse=True, return_counts=True)
         self.class_means_ = np.zeros_like(self.classes_, dtype='float64')
 
+        missing_mask = np.isnan(X)
+
+        if missing_mask.any() and self.missing == 'error':
+            error_index = list(np.where(missing_mask)[0])
+            raise ValueError('Missing value found at index {}. Aborting '
+                             'according to set strategy'.format(error_index))
+
         for i, c in enumerate(self.classes_):
-            self.class_means_[i] = np.mean(y[np.where(X == c)])
+            class_mask = np.where(X == c)
+
+            if class_mask[0].shape[0] > 0:
+                self.class_means_[i] = np.mean(y[class_mask])
+            else:
+                self.class_means_[i] = 1.0
 
         if self.smoothing != 0:
 
@@ -139,13 +215,17 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
             self.class_means_ = (counts * self.class_means_ + self.smoothing * target_mean) \
                                 / (counts + self.smoothing)
 
-        self.lut = np.hstack([self.classes_.reshape(-1, 1), self.class_means_.reshape(-1, 1)])
+        self.lut_ = np.hstack([self.classes_.reshape(-1, 1),
+                               self.class_means_.reshape(-1, 1)])
 
         if self.class_means_.shape[0] != np.unique(self.class_means_).shape[0]:
             warn('Duplicate target encoding for muliple classes. This will '
                  'make two or more categories indistinguishable.')
 
         X = np.take(self.lut_[:, 1], \
-                    np.take(np.searchsorted(self.lut_[:, 0], self.classes_), indices))
+                    np.take(np.searchsorted(self.lut_[:, 0], self.classes_),
+                            indices))
+
+        X[missing_mask] = self.default_missing_
 
         return X
