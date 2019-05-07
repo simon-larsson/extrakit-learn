@@ -8,9 +8,9 @@
 -------------------------------------------------------
 '''
 
+from copy import copy
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
-from copy import copy
 import numpy as np
 
 class FoldEstimator(BaseEstimator):
@@ -41,15 +41,15 @@ class FoldEstimator(BaseEstimator):
 
         if proba_metric and regressor:
             raise ValueError('Cannot be both a regressor and use a metric that '
-            'requires `predict_proba`')
+                             'requires `predict_proba`')
 
         if proba_metric and not hasattr(est, 'predict_proba'):
             raise ValueError('Metric `{}` requires a classifier that implements '
-            '`predict_proba`'.format(metric.__name__))
+                             '`predict_proba`'.format(metric.__name__))
 
         if not regressor and ensemble and not hasattr(est, 'predict_proba'):
             raise ValueError('Can only ensemble classifiers that implement '
-            '`predict_proba`')
+                             '`predict_proba`')
 
         self.est = est
         self.fold = fold
@@ -75,7 +75,7 @@ class FoldEstimator(BaseEstimator):
         self : object
             Returns self.
         '''
- 
+
         X, y = check_X_y(X, y, accept_sparse=True)
 
         if self.ensemble:
@@ -87,8 +87,8 @@ class FoldEstimator(BaseEstimator):
             self.n_classes_ = np.unique(y).shape[0]
 
         if self.proba_metric:
-            self.oof_y_ = np.zeros((X.shape[0], self.n_classes_), 
-                                    dtype=np.float64)
+            self.oof_y_ = np.zeros((X.shape[0], self.n_classes_),
+                                   dtype=np.float64)
         else:
             self.oof_y_ = np.zeros_like(y)
 
@@ -108,7 +108,7 @@ class FoldEstimator(BaseEstimator):
             if self.proba_metric:
                 y_oof_ = est.predict_proba(X_oof)
                 self.oof_y_[oof_idx] = y_oof_
-                y_oof_ = y_oof_[:,0]
+                y_oof_ = y_oof_[:, 0]
             else:
                 y_oof_ = est.predict(X_oof)
                 self.oof_y_[oof_idx] = y_oof_
@@ -121,7 +121,7 @@ class FoldEstimator(BaseEstimator):
 
             if self.verbose:
                 print('Finished fold {} with score: {}'.format(current_fold,
-                                                                oof_score))
+                                                               oof_score))
 
             current_fold += 1
 
@@ -129,7 +129,7 @@ class FoldEstimator(BaseEstimator):
             self.est.fit(X, y)
 
         if len(self.oof_y_.shape) > 1:
-            self.oof_score_ = self.metric(y, self.oof_y_[:,0])
+            self.oof_score_ = self.metric(y, self.oof_y_[:, 0])
         else:
             self.oof_score_ = self.metric(y, self.oof_y_)
 
