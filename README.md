@@ -3,12 +3,12 @@
 Machine learnings components built to extend scikit-learn. All components use scikit's [object API](https://scikit-learn.org/stable/developers/contributing.html#apis-of-scikit-learn-objects) to work interchangably with scikit components.
 
 ## Components
-- **TargetEncoder** - Categorical feature engineering based on target means
-- **CountEncoder** - Categorical feature engineering based on value counts
-- **FoldEstimator** - K-fold cross validation meta estimator
-- **FoldLGBM** - K-fold cross validation meta LGBM
-- **StackingClassifier** - Stack an ensamble of classifiers with a meta classifier
-- **StackingRegressor** - Stack an ensamble of regressors with a meta regressor
+- **TargetEncoder** - Categorical feature engineering based on target means.
+- **CountEncoder** - Categorical feature engineering based on value counts.
+- **FoldEstimator** - K-fold cross validation meta estimator.
+- **FoldLGBM** - K-fold cross validation meta LGBM.
+- **StackingClassifier** - Stack an ensamble of classifiers with a meta classifier.
+- **StackingRegressor** - Stack an ensamble of regressors with a meta regressor.
 
 ### TargetEncoder
 Performs target mean encoding of categorical features with optional smoothing.
@@ -40,13 +40,13 @@ Meta estimator that performs cross validation over k folds. Can optionally be us
 #### Arguments
 `est` - Base estimator.
 
-`fold` - Folding cross validation object, i.e KFold and StratifedKfold
+`fold` - Folding cross validation object, i.e KFold and StratifedKfold.
 
 `metric` - Evaluation metric.
 
-`ensemble` - Flag indicting that the estimator should be a stacked ensemble after fit
+`ensemble` - Flag indicting that the estimator should be a stacked ensemble after fit.
 
-`verbose` - Flag for printing intermediate scores during fit
+`verbose` - Flag for printing intermediate scores during fit.
 
 #### Example:
 ```python
@@ -65,15 +65,15 @@ Meta estimator that performs cross validation over k folds on a LightGBM estimat
 #### Arguments
 `lgbm` - Base estimator.
 
-`fold` - Folding cross validation object, i.e KFold and StratifedKfold
+`fold` - Folding cross validation object, i.e KFold and StratifedKfold.
 
 `metric` - Evaluation metric.
 
 `fit_params` - Dictionary of parameter that should be fed to the fit method.
 
-`ensemble` - Flag indicting that the estimator should be a stacked ensemble after fit
+`ensemble` - Flag indicting that the estimator should be a stacked ensemble after fit.
 
-`verbose` - Flag for printing intermediate scores during fit
+`verbose` - Flag for printing intermediate scores during fit.
 
 #### Example:
 ```python
