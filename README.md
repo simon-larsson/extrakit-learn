@@ -15,6 +15,19 @@ Performs target mean encoding of categorical features with optional smoothing.
 
 #### Arguments
 `smoothing` - Smoothing weight.
+
+`unseen` - Strategy for handling unseen values. Se replacement strategies below for options.
+
+`missing` - Strategy for handling missing values. Se replacement strategies below for options.
+
+##### Replacement strategies
+
+`'one'` - Replace value with 1.
+
+`'nan'` - Replace value with np.nan.
+
+`'error'` - Raise ValueError.
+
 #### Example:
 
 ```python
@@ -26,7 +39,17 @@ X[0] = te.fit_transform(X[0], y)
 Replaces categorical values with their respective value count during training. Classes with a count of one and previously unseen classes during prediction are encoded as either one or nan.
 
 #### Arguments
-`one_to_nan` - Flag for using nans instead of ones for unseen/single classes.
+`unseen` - Strategy for handling unseen values. Se replacement strategies below for options.
+
+`missing` - Strategy for handling missing values. Se replacement strategies below for options.
+
+##### Replacement strategies
+
+`'one'` - Replace value with 1.
+
+`'nan'` - Replace value with np.nan.
+
+`'error'` - Raise ValueError.
 
 #### Example:
 ```python
@@ -83,14 +106,14 @@ fit_params = {'eval_metric': 'auc',
               'early_stopping_rounds': 50,
               'verbose': 0}
               
-est = FoldLGBM(base, 
-               fold=fold, 
-               metric=roc_auc_score,
-               fit_params=fit_params,
-               verbose=1)
+fold_lgbm = FoldLGBM(base, 
+                     fold=fold, 
+                     metric=roc_auc_score,
+                     fit_params=fit_params,
+                     verbose=1)
                
-est.fit(X_train, y_train)
-est.predict(X_test)
+fold_lgbm.fit(X_train, y_train)
+fold_lgbm.predict(X_test)
 ```
 
 ### StackingClassifier
