@@ -20,9 +20,11 @@ class CountEncoder(BaseEstimator, TransformerMixin):
 
     Parameters
     ----------
-    unseen : Replacement strategy for unseen values [`one`, `nan`, `error`], str
+    unseen : Replacement strategy for unseen values, str
+             One of ['one', 'nan', 'error']
 
-    missing : Replacement strategy for missing values [`one`, `nan`, `error`], str
+    missing : Replacement strategy for missing values, str
+              One of ['one', 'nan', 'error']
     '''
 
     def __init__(self, unseen='one', missing='one'):
