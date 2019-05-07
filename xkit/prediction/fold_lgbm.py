@@ -107,10 +107,18 @@ class FoldLGBM(BaseEstimator):
                 lgbm = self.lgbm
 
             lgbm.fit(X_fold, y_fold,
-                    eval_set=self.fit_params.get('eval_set', (X_oof, y_oof)),
-                    eval_metric=self.fit_params.get('eval_metric'),
-                    early_stopping_rounds=self.fit_params.get('early_stopping_rounds'),
-                    verbose=self.fit_params.get('verbose', self.verbose)
+                     sample_weight=self.fit_params.get('sample_weight'),
+                     init_score=self.fit_params.get('init_score'),
+                     eval_set=self.fit_params.get('eval_set', (X_oof, y_oof)),
+                     eval_names=self.fit_params.get('eval_names'),
+                     eval_sample_weight=self.fit_params.get('eval_sample_weight'),
+                     eval_init_score=self.fit_params.get('eval_init_score'),
+                     eval_metric=self.fit_params.get('eval_metric'),
+                     early_stopping_rounds=self.fit_params.get('early_stopping_rounds'),
+                     verbose=self.fit_params.get('verbose', self.verbose),
+                     feature_name=self.fit_params.get('feature_name', 'auto'),
+                     categorical_feature=self.fit_params.get('categorical_feature', 'auto'),
+                     callbacks=self.fit_params.get('callbacks'),
                     )
 
             if self.proba_metric:
@@ -134,7 +142,20 @@ class FoldLGBM(BaseEstimator):
             current_fold += 1
 
         if not self.ensemble:
-            self.lgbm.fit(X, y)
+            self.lgbm.fit(X, y,
+                          sample_weight=self.fit_params.get('sample_weight'),
+                          init_score=self.fit_params.get('init_score'),
+                          eval_set=self.fit_params.get('eval_set'),
+                          eval_names=self.fit_params.get('eval_names'),
+                          eval_sample_weight=self.fit_params.get('eval_sample_weight'),
+                          eval_init_score=self.fit_params.get('eval_init_score'),
+                          eval_metric=self.fit_params.get('eval_metric'),
+                          early_stopping_rounds=self.fit_params.get('early_stopping_rounds'),
+                          verbose=self.fit_params.get('verbose', self.verbose),
+                          feature_name=self.fit_params.get('feature_name', 'auto'),
+                          categorical_feature=self.fit_params.get('categorical_feature', 'auto'),
+                          callbacks=self.fit_params.get('callbacks'),
+                    )
 
         if len(self.oof_y_.shape) > 1:
             self.oof_score_ = self.metric(y, self.oof_y_[:, 0])
