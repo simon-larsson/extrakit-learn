@@ -198,6 +198,6 @@ class FoldEstimator(BaseEstimator):
         elif self.ensemble:
             y_ = np.argmax(self.predict_proba(X), axis=1)
         else:
-            y_ = self.predict(X)
+            y_ = self.est.predict(X)
 
         return y_

@@ -107,10 +107,10 @@ class FoldLGBM(BaseEstimator):
                 lgbm = self.lgbm
 
             lgbm.fit(X_fold, y_fold,
-                     eval_set=(X_oof, y_oof),
-                     eval_metric=self.fit_params.get('eval_metric'),
-                     early_stopping_rounds=self.fit_params.get('early_stopping_rounds'),
-                     verbose=self.fit_params.get('verbose')
+                    eval_set=self.fit_params.get('eval_set', (X_oof, y_oof)),
+                    eval_metric=self.fit_params.get('eval_metric'),
+                    early_stopping_rounds=self.fit_params.get('early_stopping_rounds'),
+                    verbose=self.fit_params.get('verbose', self.verbose)
                     )
 
             if self.proba_metric:
@@ -172,8 +172,8 @@ class FoldLGBM(BaseEstimator):
         if self.ensemble:
             y_ = np.zeros((X.shape[0], self.n_classes_), dtype=np.float64)
 
-            for est in self.lgbms_:
-                y_ += est.predict_proba(X) / self.n_folds_
+            for lgbm in self.lgbms_:
+                y_ += lgbm.predict_proba(X) / self.n_folds_
         else:
             y_ = self.lgbm.predict_proba(X)
 
@@ -200,12 +200,12 @@ class FoldLGBM(BaseEstimator):
 
             y_ = np.zeros((X.shape[0],), dtype=np.float64)
 
-            for est in self.lgbms_:
-                y_ += est.predict(X) / self.n_folds_
+            for lgbm in self.lgbms_:
+                y_ += lgbm.predict(X) / self.n_folds_
 
         elif self.ensemble:
             y_ = np.argmax(self.predict_proba(X), axis=1)
         else:
-            y_ = self.predict(X)
+            y_ = self.lgbm.predict(X)
 
         return y_
