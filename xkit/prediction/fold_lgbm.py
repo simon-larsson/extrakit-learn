@@ -155,7 +155,7 @@ class FoldLGBM(BaseEstimator):
                           feature_name=self.fit_params.get('feature_name', 'auto'),
                           categorical_feature=self.fit_params.get('categorical_feature', 'auto'),
                           callbacks=self.fit_params.get('callbacks'),
-                    )
+                         )
 
         if len(self.oof_y_.shape) > 1:
             self.oof_score_ = self.metric(y, self.oof_y_[:, 0])
