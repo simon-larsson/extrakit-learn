@@ -39,14 +39,14 @@ class CountEncoder(BaseEstimator, TransformerMixin):
                              'strategy, {}'.format(missing, replace_strats))
 
         if unseen == 'one':
-            self.default_unseen = 1
+            self.default_unseen_ = 1
         elif unseen == 'nan':
-            self.default_unseen = np.nan
+            self.default_unseen_ = np.nan
 
         if missing == 'one':
-            self.default_missing = 1
+            self.default_missing_ = 1
         elif missing == 'nan':
-            self.default_missing = np.nan
+            self.default_missing_ = np.nan
 
         self.requires_float = missing == 'nan' or unseen == 'nan'
 
@@ -88,7 +88,7 @@ class CountEncoder(BaseEstimator, TransformerMixin):
                  'make two or more categories indistinguishable.')
 
         self.classes_ = np.append(self.classes_, [-1])
-        self.counts_ = np.append(self.counts_, [self.default_unseen])
+        self.counts_ = np.append(self.counts_, [self.default_unseen_])
         self.lut_ = np.hstack([self.classes_.reshape(-1, 1),
                                self.counts_.reshape(-1, 1)])
 
@@ -135,6 +135,6 @@ class CountEncoder(BaseEstimator, TransformerMixin):
                     np.take(np.searchsorted(self.lut_[:, 0], self.classes_),
                             indices))
 
-        X[missing_mask] = self.default_missing
+        X[missing_mask] = self.default_missing_
 
         return X
