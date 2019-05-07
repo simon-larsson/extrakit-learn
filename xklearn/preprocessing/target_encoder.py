@@ -139,8 +139,8 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
                              'according to set strategy'.format(error_index))
 
         if self.unseen == 'error' and unseen_index:
-            raise ValueError('X contains previously unseen classes at index '\
-                             .format(unseen_index))
+            raise ValueError('X contains previously a unseen classes at index '
+                             '{}'.format(unseen_index))
 
         # Perform replacement with lookup
         X = np.take(self.lut_[:, 1], \
