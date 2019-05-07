@@ -7,8 +7,8 @@ Machine learnings components built to extend scikit-learn. All components use sc
 - **CountEncoder** - Categorical feature engineering based on value counts.
 - **FoldEstimator** - K-fold cross validation meta estimator.
 - **FoldLGBM** - K-fold cross validation meta LGBM.
-- **StackingClassifier** - Stack an ensamble of classifiers with a meta classifier.
-- **StackingRegressor** - Stack an ensamble of regressors with a meta regressor.
+- **StackingClassifier** - Stack an ensemble of classifiers with a meta classifier.
+- **StackingRegressor** - Stack an ensemble of regressors with a meta regressor.
 
 ### TargetEncoder
 Performs target mean encoding of categorical features with optional smoothing.
