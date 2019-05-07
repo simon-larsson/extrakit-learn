@@ -26,6 +26,33 @@ ce = TargetEncoder(one_to_nan=True)
 X[0] = ce.fit_transform(X[0], y)
 ```
 
+### FoldEstimator
+Meta estimator that performs cross validation over k folds. Can optionally be used as a stacked ensemble of k estimators.
+
+#### Arguments
+`est` - Base estimator.
+
+`fold` - Folding cross validation object, i.e KFold and StratifedKfold
+
+`metric` - Evaluation metric.
+
+`regressor` - Flag indicating regression
+
+`proba_metric` - Flag indicting that metric wants probability
+
+`ensemble` - Flag indicting that the estimator should be a stacked ensemble after fit
+
+`verbose` - Flag for printing intermediate scores during fit
+
+#### Example:
+```python
+base = RandomForestRegressor(n_estimators=10)
+fold = KFold(n_splits=5)
+est = FoldEstimator(base, fold=fold, metric=mean_squared_error, verbose=1)
+est.fit(X_train, y_train)
+est.predict(X_test)
+```
+
 ### StackingClassifier
 Ensemble classifier that stacks an ensemble of classifiers by using their outputs as input features.
 
