@@ -1,5 +1,8 @@
 # extrakit-learn
 
+[![PyPI version](https://badge.fury.io/py/xklearn.svg)](https://pypi.python.org/pypi/xklearn/) 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/simon-larsson/extrakit-learn/blob/master/LICENSE)
+
 Machine learnings components built to extend scikit-learn. All components use scikit's [object API](https://scikit-learn.org/stable/developers/contributing.html#apis-of-scikit-learn-objects) to work interchangably with scikit components. It is mostly a collection of tools that have been useful for [Kaggle](https://www.kaggle.com) competitions. extrakit-learn is in no way affiliated with scikit-learn in anyway, just inspired by it.
 
 ## Installation
