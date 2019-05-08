@@ -1,15 +1,15 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name='extrakit-learn',
-    version='0.1.0',
+    name='xklearn',
+    version='0.0.1',
     description='.',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    packages=['xklearn'],
+    packages=find_packages(),
     author='Simon Larsson',
     author_email='simonlarsson0@gmail.com',
     url='https://github.com/simon-larsson/extrakit-learn',
@@ -17,6 +17,6 @@ setup(
     install_requires=['numpy', 'sklearn'],
     classifiers=['License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3 :: Only',
-        'Topic :: Scientific/Engineering',
+        'Topic :: Scientific/Engineering'
         ]
 )
