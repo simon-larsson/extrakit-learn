@@ -3,9 +3,6 @@ from setuptools import setup, find_packages
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-NUMPY_MIN_VERSION = '1.14.0'
-SKLEARN_MIN_VERSION = '0.20.2'
-
 setup(
     name='xklearn',
     version='0.0.1',
@@ -17,8 +14,8 @@ setup(
     author_email='simonlarsson0@gmail.com',
     url='https://github.com/simon-larsson/extrakit-learn',
     license='MIT',
-    install_requires=['numpy>={}'.format(NUMPY_MIN_VERSION),
-                      'sklearn>={}'.format(SKLEARN_MIN_VERSION)],
+    install_requires=['numpy',
+                      'sklearn'],
     classifiers=['License :: OSI Approved :: MIT License',
                  'Programming Language :: Python :: 3 :: Only',
                  'Topic :: Scientific/Engineering']
