@@ -23,20 +23,23 @@ class FoldLGBM(BaseEstimator):
     ----------
     lgbm : Base estimator
 
-    fit_params : Parameters that should be fed to estimator during fit, dict
-
     fold : Fold cross validation object
 
     metric : Evaluations metric, func(y, y_)
+
+    fit_params : Parameters that should be fed to estimator during fit, dict
 
     ensemble : Flag for post fit behaviour
                 True: Continue as a ensemble trained on separate folds
                 False: Retrain one estimator on full data
 
+    refit_params : Parameters that should be fed to estimator during refit, dict
+                   Only used when `ensemble=False`
+
     verbose : Printing of intermediate results, bool or int
     '''
 
-    def __init__(self, lgbm, fit_params, fold, metric, ensemble=False, verbose=0):
+    def __init__(self, lgbm, fold, metric, fit_params={}, ensemble=False, refit_params={}, verbose=0):
 
         proba_metric = metric.__name__ in ['roc_auc_score']
         regressor = issubclass(type(lgbm), RegressorMixin)
@@ -60,6 +63,7 @@ class FoldLGBM(BaseEstimator):
         self.regressor = regressor
         self.proba_metric = proba_metric
         self.ensemble = ensemble
+        self.refit_params = refit_params
         self.verbose = verbose
 
     def fit(self, X, y):
@@ -143,18 +147,18 @@ class FoldLGBM(BaseEstimator):
 
         if not self.ensemble:
             self.lgbm.fit(X, y,
-                          sample_weight=self.fit_params.get('sample_weight'),
-                          init_score=self.fit_params.get('init_score'),
-                          eval_set=self.fit_params.get('eval_set'),
-                          eval_names=self.fit_params.get('eval_names'),
-                          eval_sample_weight=self.fit_params.get('eval_sample_weight'),
-                          eval_init_score=self.fit_params.get('eval_init_score'),
-                          eval_metric=self.fit_params.get('eval_metric'),
-                          early_stopping_rounds=self.fit_params.get('early_stopping_rounds'),
-                          verbose=self.fit_params.get('verbose', self.verbose),
-                          feature_name=self.fit_params.get('feature_name', 'auto'),
-                          categorical_feature=self.fit_params.get('categorical_feature', 'auto'),
-                          callbacks=self.fit_params.get('callbacks'),
+                          sample_weight=self.refit_params.get('sample_weight'),
+                          init_score=self.refit_params.get('init_score'),
+                          eval_set=self.refit_params.get('eval_set'),
+                          eval_names=self.refit_params.get('eval_names'),
+                          eval_sample_weight=self.refit_params.get('eval_sample_weight'),
+                          eval_init_score=self.refit_params.get('eval_init_score'),
+                          eval_metric=self.refit_params.get('eval_metric'),
+                          early_stopping_rounds=self.refit_params.get('early_stopping_rounds'),
+                          verbose=self.refit_params.get('verbose', self.verbose),
+                          feature_name=self.refit_params.get('feature_name', 'auto'),
+                          categorical_feature=self.refit_params.get('categorical_feature', 'auto'),
+                          callbacks=self.refit_params.get('callbacks'),
                          )
 
         if len(self.oof_y_.shape) > 1:
