@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 setup(
     name='xklearn',
     version='0.0.1',
-    description='.',
+    description='Handy machine learning tools in the spirit of scikit-learn.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     packages=find_packages(),
