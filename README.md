@@ -1,6 +1,6 @@
 # extrakit-learn
 
-Machine learnings components built to extend scikit-learn. All components use scikit's [object API](https://scikit-learn.org/stable/developers/contributing.html#apis-of-scikit-learn-objects) to work interchangably with scikit components.
+Machine learnings components built to extend scikit-learn. All components use scikit's [object API](https://scikit-learn.org/stable/developers/contributing.html#apis-of-scikit-learn-objects) to work interchangably with scikit components. It is mostly a collection of tools that have been useful for [Kaggle](https://www.kaggle.com) competitions. This is not affiliated with scikit-learn in anyway, just inspired by it.
 
 ## Components
 - **TargetEncoder** - Categorical feature engineering based on target means.
@@ -67,7 +67,7 @@ Meta estimator that performs cross validation over k folds. Can optionally be us
 
 `metric` - Evaluation metric.
 
-`ensemble` - Flag indicting that the estimator should be a stacked ensemble after fit.
+`ensemble` - Flag indicting post fit behaviour. True will make it a stacked ensemble, False will do a full refit on the full data.
 
 `verbose` - Flag for printing intermediate scores during fit.
 
@@ -94,7 +94,9 @@ Meta estimator that performs cross validation over k folds on a LightGBM estimat
 
 `fit_params` - Dictionary of parameter that should be fed to the fit method.
 
-`ensemble` - Flag indicting that the estimator should be a stacked ensemble after fit.
+`ensemble` - Flag indicting post fit behaviour. True will make it a stacked ensemble, False will do a full refit on the full data.
+
+`refit_params` - Dictionary of parameter that should be fed to the refit if `ensemble=False`.
 
 `verbose` - Flag for printing intermediate scores during fit.
 
