@@ -1,6 +1,10 @@
 # extrakit-learn
 
-Machine learnings components built to extend scikit-learn. All components use scikit's [object API](https://scikit-learn.org/stable/developers/contributing.html#apis-of-scikit-learn-objects) to work interchangably with scikit components. It is mostly a collection of tools that have been useful for [Kaggle](https://www.kaggle.com) competitions. This is not affiliated with scikit-learn in anyway, just inspired by it.
+Machine learnings components built to extend scikit-learn. All components use scikit's [object API](https://scikit-learn.org/stable/developers/contributing.html#apis-of-scikit-learn-objects) to work interchangably with scikit components. It is mostly a collection of tools that have been useful for [Kaggle](https://www.kaggle.com) competitions. extrakit-learn is in no way affiliated with scikit-learn in anyway, just inspired by it.
+
+## Installation
+
+    pip install xklearn
 
 ## Components
 - **TargetEncoder** - Categorical feature engineering based on target means.
@@ -9,6 +13,21 @@ Machine learnings components built to extend scikit-learn. All components use sc
 - **FoldLGBM** - K-fold cross validation meta LGBM.
 - **StackingClassifier** - Stack an ensemble of classifiers with a meta classifier.
 - **StackingRegressor** - Stack an ensemble of regressors with a meta regressor.
+
+### Hierachy
+    xklearn
+    ├── preprocessing
+    │   ├── CountEncoder      
+    │   └── TargetEncoder    
+    └── models
+        ├── FoldEstimator
+        ├── FoldLGBM
+        ├── StackingClassifier
+        └── StackingRegressor
+
+##### Example
+
+    from xklearn.models import FoldEstimator
 
 ### TargetEncoder
 Performs target mean encoding of categorical features with optional smoothing.
