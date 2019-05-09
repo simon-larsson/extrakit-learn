@@ -75,8 +75,8 @@ Replaces categorical values with their respective value count during training. C
 
 #### Example:
 ```python
-ce = TargetEncoder(one_to_nan=True)
-X[0] = ce.fit_transform(X[0], y)
+ce = CountEncoder(unseen='one')
+X[0] = ce.fit_transform(X[0])
 ```
 
 ### FoldEstimator
