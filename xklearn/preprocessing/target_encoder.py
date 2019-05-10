@@ -152,7 +152,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
         return X
 
     def fit_transform(self, X, y):
-        ''' Fitting of the transformer
+        ''' Combined fit and transform
 
         Parameters
         ----------
