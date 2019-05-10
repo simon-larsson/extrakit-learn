@@ -85,7 +85,7 @@ class CountEncoder(BaseEstimator, TransformerMixin):
             warn('Duplicate count encoding for muliple classes. This will '
                  'make two or more categories indistinguishable.')
 
-        self.classes_ = np.append(self.classes_, [-1])
+        self.classes_ = np.append(self.classes_, [np.max(self.classes_) + 1])
         self.counts_ = np.append(self.counts_, [self.default_unseen_])
         self.lut_ = np.hstack([self.classes_.reshape(-1, 1),
                                self.counts_.reshape(-1, 1)])
@@ -119,6 +119,9 @@ class CountEncoder(BaseEstimator, TransformerMixin):
         check_error_strat(missing_mask, self.missing, 'missing')
         check_error_strat(unseen_mask, self.unseen, 'unseen')
 
+        # Make all unseen to the same class outside of classes
+        X[unseen_mask] = np.max(self.classes_)
+
         _, indices = np.unique(X, return_inverse=True)
 
         # Perform replacement with lookup
@@ -126,6 +129,10 @@ class CountEncoder(BaseEstimator, TransformerMixin):
                     np.take(np.searchsorted(self.lut_[:, 0], self.classes_),
                             indices))
 
-        X[missing_mask] = self.default_missing_
+        if np.any(missing_mask):
+            X[missing_mask] = self.default_missing_
+
+        if self.requires_float_ and np.all(np.isfinite(X)):
+            X = X.astype('int64')
 
         return X
