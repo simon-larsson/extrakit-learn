@@ -54,7 +54,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
             The class values. An array of int.
 
         y : array-like, shape (n_samples,)
-            The target values. An array of int.
+            The target values.
 
         Returns
         -------
@@ -155,7 +155,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
             The class values. An array of int.
 
         y : array-like, shape (n_samples,)
-            The target values. An array of int.
+            The target values.
 
         Returns
         -------
