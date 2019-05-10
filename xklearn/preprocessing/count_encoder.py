@@ -48,7 +48,7 @@ class CountEncoder(BaseEstimator, TransformerMixin):
         elif missing == 'nan':
             self.default_missing_ = np.nan
 
-        self.requires_float = missing == 'nan' or unseen == 'nan'
+        self.requires_float_ = missing == 'nan' or unseen == 'nan'
 
         self.unseen = unseen
         self.missing = missing
@@ -73,7 +73,7 @@ class CountEncoder(BaseEstimator, TransformerMixin):
 
         X = column_or_1d(X, warn=True)
 
-        if self.requires_float:
+        if self.requires_float_:
             X = X.astype('float64')
 
         if self.missing == 'error' and np.isnan(X).any():
@@ -112,7 +112,7 @@ class CountEncoder(BaseEstimator, TransformerMixin):
         check_is_fitted(self, 'classes_')
         X = column_or_1d(X, warn=True)
 
-        if self.requires_float:
+        if self.requires_float_:
             X = X.astype('float64')
 
         missing_mask = np.isnan(X)
