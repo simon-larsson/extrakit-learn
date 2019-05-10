@@ -9,6 +9,7 @@
 '''
 
 from warnings import warn
+from ..preprocessing.util import check_error_strat
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.validation import column_or_1d, check_is_fitted
 import numpy as np
@@ -64,10 +65,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
         X = column_or_1d(X, warn=True)
         y = column_or_1d(y, warn=True)
 
-        if self.missing == 'error' and np.isnan(X).any():
-            error_index = list(np.where(np.isnan(X))[0])
-            raise ValueError('Missing value found at index {}. Aborting '
-                             'according to set strategy'.format(error_index))
+        check_error_strat(np.isnan(X), self.missing, 'missing')
 
         target_mean = np.mean(y)
 
@@ -133,14 +131,11 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
         missing_mask = np.isnan(X)
         unseen_index = list(np.setdiff1d(classes, self.classes_))
 
-        if missing_mask.any() and self.missing == 'error':
-            error_index = list(np.where(missing_mask)[0])
-            raise ValueError('Missing value found at index {}. Aborting '
-                             'according to set strategy'.format(error_index))
+        check_error_strat(np.isnan(X), self.missing, 'missing')
 
         if self.unseen == 'error' and unseen_index:
-            raise ValueError('X contains previously a unseen classes at index '
-                             '{}'.format(unseen_index))
+            raise ValueError('Error value found at index {}. Aborting '
+                            'according to unseen strategy'.format(unseen_index))
 
         # Perform replacement with lookup
         X = np.take(self.lut_[:, 1], \
@@ -193,10 +188,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
 
         missing_mask = np.isnan(X)
 
-        if missing_mask.any() and self.missing == 'error':
-            error_index = list(np.where(missing_mask)[0])
-            raise ValueError('Missing value found at index {}. Aborting '
-                             'according to set strategy'.format(error_index))
+        check_error_strat(np.isnan(X), self.missing, 'missing')
 
         for i, c in enumerate(self.classes_):
             class_mask = np.where(X == c)
