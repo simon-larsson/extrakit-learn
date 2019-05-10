@@ -9,6 +9,7 @@
 '''
 
 from warnings import warn
+from ..preprocessing.util import check_error_strat
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.validation import column_or_1d, check_is_fitted
 import numpy as np
@@ -76,10 +77,7 @@ class CountEncoder(BaseEstimator, TransformerMixin):
         if self.requires_float_:
             X = X.astype('float64')
 
-        if self.missing == 'error' and np.isnan(X).any():
-            error_index = list(np.where(np.isnan(X))[0])
-            raise ValueError('Missing value found at index {}. Aborting '
-                             'according to set strategy'.format(error_index))
+        check_error_strat(np.isnan(X), self.missing, 'missing')
 
         self.classes_, self.counts_ = np.unique(X, return_counts=True)
 
@@ -118,15 +116,8 @@ class CountEncoder(BaseEstimator, TransformerMixin):
         missing_mask = np.isnan(X)
         unseen_mask = np.isin(X, self.classes_, invert=True)
 
-        if unseen_mask.any() and self.unseen == 'error':
-            error_index = list(np.where(unseen_mask)[0])
-            raise ValueError('Unseen value found at index {}. Aborting '
-                             'according to set strategy'.format(error_index))
-
-        if missing_mask.any() and self.missing == 'error':
-            error_index = list(np.where(missing_mask)[0])
-            raise ValueError('Missing value found at index {}. Aborting '
-                             'according to set strategy'.format(error_index))
+        check_error_strat(missing_mask, self.missing, 'missing')
+        check_error_strat(unseen_mask, self.unseen, 'unseen')
 
         _, indices = np.unique(X, return_inverse=True)
 
