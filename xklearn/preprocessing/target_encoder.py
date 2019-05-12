@@ -65,21 +65,20 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
         X = column_or_1d(X, warn=True)
         y = column_or_1d(y, warn=True)
 
-        check_error_strat(np.isnan(X), self.missing, 'missing')
+        missing_mask = np.isnan(X)
+        encode_mask = np.invert(missing_mask)
+
+        check_error_strat(missing_mask, self.missing, 'missing')
 
         target_mean = np.mean(y)
 
-        if self.unseen == 'global':
-            self.default_unseen_ = target_mean
-        elif self.unseen == 'nan':
-            self.default_unseen_ = np.nan
+        self.default_unseen_ = strat_to_default(self.unseen, 
+                                                target_mean)
 
-        if self.missing == 'global':
-            self.default_missing_ = target_mean
-        elif self.missing == 'nan':
-            self.default_missing_ = np.nan
+        self.default_missing_ = strat_to_default(self.missing, 
+                                                target_mean)
 
-        self.classes_, counts = np.unique(X, return_counts=True)
+        self.classes_, counts = np.unique(X[encode_mask], return_counts=True)
         self.class_means_ = np.zeros_like(self.classes_, dtype='float64')
 
         for i, c in enumerate(self.classes_):
@@ -98,6 +97,10 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
 
             self.class_means_ = (counts * self.class_means_ + self.smoothing * target_mean)\
                                 / (counts + self.smoothing)
+            
+        if self.unseen is not 'error':
+            self.classes_ = np.append(self.classes_, [np.max(self.classes_) + 1])
+            self.class_means_ = np.append(self.class_means_, [self.default_unseen_])
 
         self.lut_ = np.hstack([self.classes_.reshape(-1, 1),
                                self.class_means_.reshape(-1, 1)])
@@ -126,23 +129,27 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
         check_is_fitted(self, 'class_means_')
         X = column_or_1d(X, warn=True)
 
-        classes, indices = np.unique(X, return_inverse=True)
-
         missing_mask = np.isnan(X)
-        unseen_index = list(np.setdiff1d(classes, self.classes_))
+        encode_mask = np.invert(missing_mask)
+        unseen_mask = np.bitwise_xor(np.isin(X, self.classes_, invert=True), 
+                                     missing_mask)
 
-        check_error_strat(np.isnan(X), self.missing, 'missing')
+        check_error_strat(missing_mask, self.missing, 'missing')
+        check_error_strat(unseen_mask, self.unseen, 'unseen')
 
-        if self.unseen == 'error' and unseen_index:
-            raise ValueError('Error value found at index {}. Aborting '
-                            'according to unseen strategy'.format(unseen_index))
+        # Make all unseen to the same class outside of classes
+        X[unseen_mask] = np.max(self.classes_)
+
+        _, indices = np.unique(X[encode_mask], return_inverse=True)
 
         # Perform replacement with lookup
-        X = np.take(self.lut_[:, 1], \
-                    np.take(np.searchsorted(self.lut_[:, 0], self.classes_),
-                            indices))
+        X[encode_mask] = np.take(self.lut_[:, 1], \
+                                 np.take(np.searchsorted(self.lut_[:, 0], 
+                                                         self.classes_),
+                                         indices))
 
-        X[missing_mask] = self.default_missing_
+        if np.any(missing_mask):
+            X[missing_mask] = self.default_missing_
 
         return X
 
@@ -166,29 +173,24 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
         X = column_or_1d(X, warn=True)
         y = column_or_1d(y, warn=True)
 
-        if self.missing == 'error' and np.isnan(X).any():
-            error_index = list(np.where(np.isnan(X))[0])
-            raise ValueError('Missing value found at index {}. Aborting '
-                             'according to set strategy'.format(error_index))
+        missing_mask = np.isnan(X)
+        encode_mask = np.invert(missing_mask)
+
+        check_error_strat(missing_mask, self.missing, 'missing')
 
         target_mean = np.mean(y)
 
-        if self.unseen == 'global':
-            self.default_unseen_ = target_mean
-        elif self.unseen == 'nan':
-            self.default_unseen_ = np.nan
+        self.default_unseen_ = strat_to_default(self.unseen, 
+                                                target_mean)
 
-        if self.missing == 'global':
-            self.default_missing_ = target_mean
-        elif self.missing == 'nan':
-            self.default_missing_ = np.nan
+        self.default_missing_ = strat_to_default(self.missing, 
+                                                target_mean)
 
-        self.classes_, indices, counts = np.unique(X, return_inverse=True, return_counts=True)
+        self.classes_, indices, counts = np.unique(X[encode_mask], 
+                                                   return_inverse=True, 
+                                                   return_counts=True)
+
         self.class_means_ = np.zeros_like(self.classes_, dtype='float64')
-
-        missing_mask = np.isnan(X)
-
-        check_error_strat(np.isnan(X), self.missing, 'missing')
 
         for i, c in enumerate(self.classes_):
             class_mask = np.where(X == c)
@@ -207,6 +209,8 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
             self.class_means_ = (counts * self.class_means_ + self.smoothing * target_mean) \
                                 / (counts + self.smoothing)
 
+        self.classes_ = np.append(self.classes_, [np.max(self.classes_) + 1])
+        self.class_means_ = np.append(self.class_means_, [self.default_unseen_])
         self.lut_ = np.hstack([self.classes_.reshape(-1, 1),
                                self.class_means_.reshape(-1, 1)])
 
@@ -214,10 +218,23 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
             warn('Duplicate target encoding for muliple classes. This will '
                  'make two or more categories indistinguishable.')
 
-        X = np.take(self.lut_[:, 1], \
-                    np.take(np.searchsorted(self.lut_[:, 0], self.classes_),
-                            indices))
+        # Perform replacement with lookup
+        X[encode_mask] = np.take(self.lut_[:, 1], \
+                                 np.take(np.searchsorted(self.lut_[:, 0], 
+                                                         self.classes_),
+                                         indices))
 
-        X[missing_mask] = self.default_missing_
+        if np.any(missing_mask):
+            X[missing_mask] = self.default_missing_
 
         return X
+
+
+def strat_to_default(strat, global_mean=None):
+
+    if strat == 'global':
+        return global_mean
+    elif strat == 'nan':
+        return np.nan
+    else:
+        return None
