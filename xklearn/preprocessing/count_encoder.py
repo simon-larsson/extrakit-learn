@@ -128,7 +128,7 @@ class CountEncoder(BaseEstimator, TransformerMixin):
         return X
 
 def strat_to_default(strat):
-    
+
     if strat == 'one':
         return 1
     elif strat == 'nan':
