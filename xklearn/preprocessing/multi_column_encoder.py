@@ -49,10 +49,7 @@ class MultiColumnEncoder(BaseEstimator, TransformerMixin):
 
         X = check_array(X, accept_sparse=True)
 
-        if self.columns is None:
-            self.columns = None
-        else:
-            self.columns = to_column_indices(X, self.columns)
+        self.columns = to_column_indices(X, self.columns)
 
         self.encs_ = []
 
@@ -128,6 +125,8 @@ class MultiColumnEncoder(BaseEstimator, TransformerMixin):
 
         X = check_array(X, accept_sparse=True)
 
+        self.columns = to_column_indices(X, self.columns)
+
         self.encs_ = []
 
         if self.columns is None:
@@ -151,9 +150,13 @@ class MultiColumnEncoder(BaseEstimator, TransformerMixin):
         return X
 
 def to_column_indices(X, columns):
-    columns = np.array(columns).reshape(-1)
 
-    if X.shape[1] == columns.shape[0]:
-        return np.where(columns)[0]
+    if columns is None:
+        return None
     else:
-        return columns
+        columns = np.array(columns).reshape(-1)
+
+        if X.shape[1] == columns.shape[0]:
+            return np.where(columns)[0]
+        else:
+            return columns
