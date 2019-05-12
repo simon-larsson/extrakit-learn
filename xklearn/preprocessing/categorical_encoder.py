@@ -118,11 +118,10 @@ class CategoricalEncoder(BaseEstimator, TransformerMixin):
         X = column_or_1d(X.copy(), warn=True)
         check_is_fitted(self, 'n_classes')
 
-        unseen_mask = np.isin(X, self.le_.classes_, invert=True)
-
         if is_object_array(X):
             missing_mask = [x is np.nan for x in X]
-            unseen_mask = np.bitwise_xor(unseen_mask, missing_mask)
+            unseen_mask = np.bitwise_xor(np.isin(X, self.le_.classes_, invert=True), 
+                                        missing_mask)
             
             check_error_strat(missing_mask, self.missing, 'missing')
             check_error_strat(unseen_mask, self.unseen, 'unseen')
@@ -142,7 +141,8 @@ class CategoricalEncoder(BaseEstimator, TransformerMixin):
 
         elif is_float_array(X):
             missing_mask = np.isnan(X)
-            unseen_mask = np.bitwise_xor(unseen_mask, missing_mask)
+            unseen_mask = np.bitwise_xor(np.isin(X, self.le_.classes_, invert=True), 
+                                        missing_mask)
 
             check_error_strat(missing_mask, self.missing, 'missing')
             check_error_strat(unseen_mask, self.unseen, 'unseen')
