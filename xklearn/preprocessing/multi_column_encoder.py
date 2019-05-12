@@ -28,11 +28,7 @@ class MultiColumnEncoder(BaseEstimator, TransformerMixin):
 
     def __init__(self, enc, columns=None):
         self.enc = enc
-
-        if columns is None:
-            self.columns = None
-        else:
-            self.columns = to_column_indices(X, columns)
+        self.columns = columns
 
     def fit(self, X, y=None):
         ''' Fitting of the transformer
@@ -52,6 +48,11 @@ class MultiColumnEncoder(BaseEstimator, TransformerMixin):
         '''
 
         X = check_array(X, accept_sparse=True)
+
+        if self.columns is None:
+            self.columns = None
+        else:
+            self.columns = to_column_indices(X, self.columns)
 
         self.encs_ = []
 
