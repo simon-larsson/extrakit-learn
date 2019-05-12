@@ -23,7 +23,7 @@ def check_error_strat(mask, strat, name):
         indices = list(np.where(mask)[0])
         
         raise ValueError('Error value found at index {}. Aborting '
-                         'according to {} strategy'.format(indices, name))
+                         'according to {} strategy.'.format(indices, name))
 
 def correct_dtype(X, default_unseen, unseen_mask, default_missing, missing_mask):
 
@@ -32,4 +32,5 @@ def correct_dtype(X, default_unseen, unseen_mask, default_missing, missing_mask)
         return X.astype('float')
     else:
         return X.astype('int')
+
 
