@@ -31,7 +31,7 @@ class FoldLightGBM(BaseEstimator):
                  Dictionary (string -> object)
 
     ensemble : Flag for post fit behaviour
-                True: Continue as a ensemble trained on separate folds
+                True: Continue as an ensemble trained on separate folds
                 False: Retrain one estimator on full data
 
     refit_params : Parameters that should be fed to estimator during refit. 
