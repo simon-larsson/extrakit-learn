@@ -16,7 +16,7 @@ import numpy as np
 class FoldXGBoost(BaseEstimator):
     ''' Fold XGBoost
 
-    Meta estimator that performs cross validation over k folds on a LightGBM
+    Meta estimator that performs cross validation over k folds on a XGBoost
     estimator. Can optionally be used as an ensemble of k estimators.
 
     Parameters
