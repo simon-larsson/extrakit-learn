@@ -8,12 +8,12 @@
 -------------------------------------------------------
 '''
 
-from .categorical_encoder import CategoricalEncoder
+from .category_encoder import CategoryEncoder
 from .multi_column_encoder import MultiColumnEncoder
 from .target_encoder import TargetEncoder
 from .count_encoder import CountEncoder
 
-__all__ = ['CategoricalEncoder',
+__all__ = ['CategoryEncoder',
            'MultiColumnEncoder',
            'TargetEncoder',
            'CountEncoder']
