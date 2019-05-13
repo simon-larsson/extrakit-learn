@@ -1,6 +1,6 @@
 '''
 -------------------------------------------------------
-    Stacking Regressor - extrakit-learn
+    Stacked Regressor - extrakit-learn
 
     Author: Simon Larsson <larssonsimon0@gmail.com>
 
@@ -12,8 +12,8 @@ from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 import numpy as np
 
-class StackingRegressor(BaseEstimator, RegressorMixin):
-    ''' Stacking Regressor
+class StackedRegressor(BaseEstimator, RegressorMixin):
+    ''' Stacked Regressor
 
     Ensemble regressor that uses one meta regressor and several sub-regressors.
     The sub-regressors give their output to to the main regressor which will
@@ -63,7 +63,7 @@ class StackingRegressor(BaseEstimator, RegressorMixin):
         # Build new tier-2 features
         X_meta = build_meta_X(self.regs, X, self.keep_features)
 
-        # Fit meta regressor, stacking the ensemble
+        # Fit meta regressor, Stacked the ensemble
         self.meta_reg.fit(X_meta, y)
 
         self.n_features_ = X.shape[1]
