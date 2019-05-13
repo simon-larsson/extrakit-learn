@@ -14,8 +14,8 @@ Machine learnings components built to extend scikit-learn. All components use sc
 - **CountEncoder** - Categorical feature engineering based on value counts.
 - **TargetEncoder** - Categorical feature engineering based on target means.
 - **MultiColumnEncoder** - Apply a column encoder to multiple columns
-- **FoldEstimator** - K-fold cross validation meta estimator.
-- **FoldLGBM** - K-fold cross validation meta LGBM.
+- **FoldEstimator** - K-fold on scikit estimator wrapped into an estimator.
+- **FoldLGBM** - K-fold on LGBM wrapped into an estimator.
 - **StackingClassifier** - Stack an ensemble of classifiers with a meta classifier.
 - **StackingRegressor** - Stack an ensemble of regressors with a meta regressor.
 
@@ -136,7 +136,7 @@ X = mce.fit_transform(X)
 ```
 
 ### FoldEstimator
-Meta estimator that performs cross validation over k folds. Can optionally be used as a stacked ensemble of k estimators.
+K-fold wrapped into an estimator that performs cross validation over a selected folding method automatically when fit. Can optionally be used as a stacked ensemble of k estimators after fit.
 
 #### Arguments
 `est` - Base estimator.
@@ -164,7 +164,7 @@ est.predict(X_test)
 ```
 
 ### FoldLGBM
-Meta estimator that performs cross validation over k folds on a LightGBM estimator. Can optionally be used as a ensemble of k estimators.
+K-fold wrapped into an estimator that performs cross validation on a LGBM over a selected folding method automatically when fit. Can optionally be used as a stacked ensemble of k estimators after fit.
 
 #### Arguments
 `lgbm` - Base estimator.
