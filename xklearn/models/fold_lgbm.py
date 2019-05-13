@@ -1,6 +1,6 @@
 '''
 -------------------------------------------------------
-    Fold LGBM - extrakit-learn
+    Fold LightGBM - extrakit-learn
 
     Author: Simon Larsson <larssonsimon0@gmail.com>
 
@@ -13,11 +13,11 @@ from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 import numpy as np
 
-class FoldLGBM(BaseEstimator):
-    ''' Fold LGBM
+class FoldLightGBM(BaseEstimator):
+    ''' Fold LightGBM
 
     Meta estimator that performs cross validation over k folds on a LightGBM
-    estimator. Can optionally be used as a ensemble of k estimators.
+    estimator. Can optionally be used as an ensemble of k estimators.
 
     Parameters
     ----------
