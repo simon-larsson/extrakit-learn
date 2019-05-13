@@ -55,6 +55,7 @@ Wraps scikit's LabelEncoder, allowing missing and unseen values to be handled.
 #### Example:
 ```python
 from xklearn.preprocessing import CategoryEncoder
+...
 
 ce = CategoryEncoder(unseen='nan', missing='nan')
 X[:, 0] = ce.fit_transform(X[:, 0])
@@ -79,6 +80,7 @@ Replaces categorical values with their respective value count during training. C
 #### Example:
 ```python
 from xklearn.preprocessing import CountEncoder
+...
 
 ce = CountEncoder(unseen='one')
 X[:, 0] = ce.fit_transform(X[:, 0])
@@ -106,6 +108,7 @@ Performs target mean encoding of categorical features with optional smoothing.
 
 ```python
 from xklearn.preprocessing import TargetEncoder
+...
 
 te = TargetEncoder(smoothing=10)
 X[:, 0] = te.fit_transform(X[:, 0], y)
@@ -123,6 +126,7 @@ Applies a column encoder over multiple columns.
 ```python
 from xklearn.preprocessing import CountEncoder
 from xklearn.preprocessing import MultiColumnEncoder
+...
 
 columns = [1, 3, 4]
 enc = CountEncoder()
@@ -148,6 +152,7 @@ Meta estimator that performs cross validation over k folds. Can optionally be us
 #### Example:
 ```python
 from xklearn.models import FoldEstimator
+...
 
 base = RandomForestRegressor(n_estimators=10)
 fold = KFold(n_splits=5)
@@ -179,6 +184,7 @@ Meta estimator that performs cross validation over k folds on a LightGBM estimat
 #### Example:
 ```python
 from xklearn.models import FoldLGBM
+...
 
 base = LGBMClassifier(n_estimators=1000)
 fold = KFold(n_splits=5)
@@ -211,6 +217,7 @@ Ensemble classifier that stacks an ensemble of classifiers by using their output
 #### Example:
 ```python
 from xklearn.models import StackingClassifier
+...
 
 meta_clf = RidgeClassifier()
 ensemble = [RandomForestClassifier(), KNeighborsClassifier(), SVC()]
@@ -236,6 +243,7 @@ Ensemble regressor that stacks an ensemble of regressors by using their outputs 
 #### Example:
 ```python
 from xklearn.models import StackingRegressor
+...
 
 meta_reg = RidgeRegressor()
 ensemble = [RandomForestRegressor(), KNeighborsRegressor(), SVR()]
