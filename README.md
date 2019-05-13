@@ -15,9 +15,10 @@ Machine learnings components built to extend scikit-learn. All components use sc
 - **TargetEncoder** - Categorical feature engineering based on target means.
 - **MultiColumnEncoder** - Apply a column encoder to multiple columns
 - **FoldEstimator** - K-fold on scikit estimator wrapped into an estimator.
-- **FoldLGBM** - K-fold on LGBM wrapped into an estimator.
-- **StackingClassifier** - Stack an ensemble of classifiers with a meta classifier.
-- **StackingRegressor** - Stack an ensemble of regressors with a meta regressor.
+- **FoldLightGBM** - K-fold on LGBM wrapped into an estimator.
+- **FoldXGBoost** - K-fold on XGBoost wrapped into an estimator.
+- **StackClassifier** - Stack an ensemble of classifiers with a meta classifier.
+- **StackRegressor** - Stack an ensemble of regressors with a meta regressor.
 
 ### Hierachy
     xklearn
@@ -29,8 +30,8 @@ Machine learnings components built to extend scikit-learn. All components use sc
     └── models
         ├── FoldEstimator
         ├── FoldLGBM
-        ├── StackingClassifier
-        └── StackingRegressor
+        ├── StackClassifier
+        └── StackRegressor
 
 ##### Example
 
@@ -163,7 +164,7 @@ est.fit(X_train, y_train)
 est.predict(X_test)
 ```
 
-### FoldLGBM
+### FoldLightGBM
 K-fold wrapped into an estimator that performs cross validation on a LGBM over a selected folding method automatically when fit. Can optionally be used as a stacked ensemble of k estimators after fit.
 
 #### Arguments
@@ -183,7 +184,7 @@ K-fold wrapped into an estimator that performs cross validation on a LGBM over a
 
 #### Example:
 ```python
-from xklearn.models import FoldLGBM
+from xklearn.models import FoldLightGBM
 ...
 
 base = LGBMClassifier(n_estimators=1000)
@@ -192,17 +193,56 @@ fit_params = {'eval_metric': 'auc',
               'early_stopping_rounds': 50,
               'verbose': 0}
               
-fold_lgbm = FoldLGBM(base, 
-                     fold=fold, 
-                     metric=roc_auc_score,
-                     fit_params=fit_params,
-                     verbose=1)
+fold_lgbm = FoldLightGBM(base, 
+                         fold=fold, 
+                         metric=roc_auc_score,
+                         fit_params=fit_params,
+                         verbose=1)
                
 fold_lgbm.fit(X_train, y_train)
 fold_lgbm.predict(X_test)
 ```
 
-### StackingClassifier
+### FoldXGBoost
+K-fold wrapped into an estimator that performs cross validation on a XGBoost over a selected folding method automatically when fit. Can optionally be used as a stacked ensemble of k estimators after fit.
+
+#### Arguments
+`xgb` - Base estimator.
+
+`fold` - Folding cross validation object, i.e KFold and StratifedKfold.
+
+`metric` - Evaluation metric.
+
+`fit_params` - Dictionary of parameter that should be fed to the fit method.
+
+`ensemble` - Flag indicting post fit behaviour. True will make it a stacked ensemble, False will do a full refit on the full data.
+
+`refit_params` - Dictionary of parameter that should be fed to the refit if `ensemble=False`.
+
+`verbose` - Flag for printing intermediate scores during fit.
+
+#### Example:
+```python
+from xklearn.models import FoldXGBoost
+...
+
+base = XGBRegressor(objective="reg:linear", random_state=42)
+fold = KFold(n_splits=5)
+fit_params = {'eval_metric': 'mse',
+              'early_stopping_rounds': 5,
+              'verbose': 0}
+              
+fold_xgb = FoldXGBoost(base, 
+                       fold=fold, 
+                       metric=mean_squared_error,
+                       fit_params=fit_params,
+                       verbose=1)
+               
+fold_xgb.fit(X_train, y_train)
+fold_xgb.predict(X_test)
+```
+
+### StackClassifier
 Ensemble classifier that stacks an ensemble of classifiers by using their outputs as input features.
 
 #### Arguments
@@ -216,19 +256,19 @@ Ensemble classifier that stacks an ensemble of classifiers by using their output
 
 #### Example:
 ```python
-from xklearn.models import StackingClassifier
+from xklearn.models import StackClassifier
 ...
 
 meta_clf = RidgeClassifier()
 ensemble = [RandomForestClassifier(), KNeighborsClassifier(), SVC()]
 
-stack_clf = StackingClassifier(clfs=ensemble, meta_clf=meta_clf, refit=True)
+stack_clf = StackClassifier(clfs=ensemble, meta_clf=meta_clf, refit=True)
 
 stack_clf.fit(X_train, y_train)
 y_ = stack_clf.predict(X_test)
 ```
 
-### StackingRegressor
+### StackRegressor
 Ensemble regressor that stacks an ensemble of regressors by using their outputs as input features.
 
 #### Arguments
@@ -242,13 +282,13 @@ Ensemble regressor that stacks an ensemble of regressors by using their outputs 
 
 #### Example:
 ```python
-from xklearn.models import StackingRegressor
+from xklearn.models import StackRegressor
 ...
 
 meta_reg = RidgeRegressor()
 ensemble = [RandomForestRegressor(), KNeighborsRegressor(), SVR()]
 
-stack_reg = StackingRegressor(regs=ensemble, meta_reg=meta_reg, refit=True)
+stack_reg = StackRegressor(regs=ensemble, meta_reg=meta_reg, refit=True)
 
 stack_reg.fit(X_train, y_train)
 y_ = stack_reg.predict(X_test)
