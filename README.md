@@ -180,7 +180,7 @@ K-fold wrapped into an estimator that performs cross validation on a LGBM over a
 
 `ensemble` - Flag indicting post fit behaviour. True will make it a stacked ensemble, False will do a full refit on the full data.
 
-`refit_params` - Dictionary of parameter that should be fed to the refit if `ensemble=False`.
+`refit_params` - Dictionary of parameter that should be fed to the refit if ensemble=False.
 
 `verbose` - Flag for printing intermediate scores during fit.
 
@@ -219,7 +219,7 @@ K-fold wrapped into an estimator that performs cross validation on a XGBoost ove
 
 `ensemble` - Flag indicting post fit behaviour. True will make it a stacked ensemble, False will do a full refit on the full data.
 
-`refit_params` - Dictionary of parameter that should be fed to the refit if `ensemble=False`.
+`refit_params` - Dictionary of parameter that should be fed to the refit if ensemble=False.
 
 `verbose` - Flag for printing intermediate scores during fit.
 
