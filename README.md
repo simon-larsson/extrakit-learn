@@ -55,7 +55,7 @@ Wraps scikit's LabelEncoder, allowing missing and unseen values to be handled.
 
 `'error'` - Raise ValueError.
 
-#### Example:
+#### Example
 ```python
 from xklearn.preprocessing import CategoryEncoder
 ...
@@ -80,7 +80,7 @@ Replaces categorical values with their respective value count during training. C
 
 `'error'` - Raise ValueError.
 
-#### Example:
+#### Example
 ```python
 from xklearn.preprocessing import CountEncoder
 ...
@@ -107,7 +107,7 @@ Performs target mean encoding of categorical features with optional smoothing.
 
 `'error'` - Raise ValueError.
 
-#### Example:
+#### Example
 
 ```python
 from xklearn.preprocessing import TargetEncoder
@@ -125,7 +125,7 @@ Applies a column encoder over multiple columns.
 
 `columns` - Column selection, either bool-mask, indices or None (default=None).
 
-#### Example:
+#### Example
 ```python
 from xklearn.preprocessing import CountEncoder
 from xklearn.preprocessing import MultiColumnEncoder
@@ -152,7 +152,7 @@ K-fold wrapped into an estimator that performs cross validation over a selected 
 
 `verbose` - Flag for printing intermediate scores during fit.
 
-#### Example:
+#### Example
 ```python
 from xklearn.models import FoldEstimator
 ...
@@ -164,6 +164,15 @@ est = FoldEstimator(base, fold=fold, metric=mean_squared_error, verbose=1)
 
 est.fit(X_train, y_train)
 est.predict(X_test)
+```
+Output:
+```
+Finished fold 1 with score: 200.80226317887826
+Finished fold 2 with score: 261.23652389345705
+Finished fold 3 with score: 169.2403756418383
+Finished fold 4 with score: 186.79152045026424
+Finished fold 5 with score: 205.08937161000628
+Finished with a total score of: 204.6812549487968
 ```
 
 ### FoldLightGBM
@@ -184,7 +193,7 @@ K-fold wrapped into an estimator that performs cross validation on a LGBM over a
 
 `verbose` - Flag for printing intermediate scores during fit.
 
-#### Example:
+#### Example
 ```python
 from xklearn.models import FoldLightGBM
 ...
@@ -203,6 +212,15 @@ fold_lgbm = FoldLightGBM(base,
                
 fold_lgbm.fit(X_train, y_train)
 fold_lgbm.predict(X_test)
+```
+Output:
+```
+Finished fold 1 with score: 0.9113924050632911
+Finished fold 2 with score: 0.9264705882352942
+Finished fold 3 with score: 0.9419354838709678
+Finished fold 4 with score: 0.918918918918919
+Finished fold 5 with score: 0.9152542372881356
+Finished with a total score of: 0.9224806201550387
 ```
 
 ### FoldXGBoost
@@ -223,7 +241,7 @@ K-fold wrapped into an estimator that performs cross validation on a XGBoost ove
 
 `verbose` - Flag for printing intermediate scores during fit.
 
-#### Example:
+#### Example
 ```python
 from xklearn.models import FoldXGBoost
 ...
@@ -243,6 +261,15 @@ fold_xgb = FoldXGBoost(base,
 fold_xgb.fit(X_train, y_train)
 fold_xgb.predict(X_test)
 ```
+Output:
+```
+Finished fold 1 with score: 3212.836210862052
+Finished fold 2 with score: 2179.784382295313
+Finished fold 3 with score: 2707.846010269413
+Finished fold 4 with score: 2988.664327204228
+Finished fold 5 with score: 3281.4299457601005
+Finished with a total score of: 3274.900079180749
+```
 
 ### StackClassifier
 Ensemble classifier that stacks an ensemble of classifiers by using their outputs as input features.
@@ -256,7 +283,7 @@ Ensemble classifier that stacks an ensemble of classifiers by using their output
 
 `refit` - Flag to retrain the ensemble of classifiers.
 
-#### Example:
+#### Example
 ```python
 from xklearn.models import StackClassifier
 ...
@@ -282,7 +309,7 @@ Ensemble regressor that stacks an ensemble of regressors by using their outputs 
 
 `refit` - Flag to retrain the ensemble of regressors.
 
-#### Example:
+#### Example
 ```python
 from xklearn.models import StackRegressor
 ...
