@@ -10,10 +10,10 @@
 
 from .fold_estimator import FoldEstimator
 from .fold_lgbm import FoldLightGBM
-from .stacked_classifier import StackedClassifier
-from .stacked_regressor import StackedRegressor
+from .stack_classifier import StackClassifier
+from .stack_regressor import StackRegressor
 
 __all__ = ['FoldEstimator',
            'FoldLightGBM',
-           'StackedClassifier',
-           'StackedRegressor']
+           'StackClassifier',
+           'StackRegressor']

@@ -1,6 +1,6 @@
 '''
 -------------------------------------------------------
-    Stacking Classifier - extrakit-learn
+    Stack Classifier - extrakit-learn
 
     Author: Simon Larsson <larssonsimon0@gmail.com>
 
@@ -12,8 +12,8 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 import numpy as np
 
-class StackingClassifier(BaseEstimator, ClassifierMixin):
-    ''' Stacking Classifier
+class StackClassifier(BaseEstimator, ClassifierMixin):
+    ''' Stack Classifier
 
     Ensemble classifier that uses one meta classifiers and several sub-classifiers.
     The sub-classifiers give their output to to the main classifier which will use
@@ -63,7 +63,7 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
         # Build new tier-2 features
         X_meta = build_meta_X(self.clfs, X, self.keep_features)
 
-        # Fit meta classifer, stacking the ensemble
+        # Fit meta classifer, Stack the ensemble
         self.meta_clf.fit(X_meta, y)
 
         # set attributes
