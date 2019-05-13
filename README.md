@@ -10,10 +10,10 @@ Machine learnings components built to extend scikit-learn. All components use sc
     pip install xklearn
 
 ## Components
-- **CategoryEncoder** - Like scikit's LabelEncoder but supports NaNs and missing values.
-- **CountEncoder** - Categorical feature engineering based on value counts.
-- **TargetEncoder** - Categorical feature engineering based on target means.
-- **MultiColumnEncoder** - Apply a column encoder to multiple columns
+- **CategoryEncoder** - Like scikit's LabelEncoder but supports NaNs and unseen values.
+- **CountEncoder** - Categorical feature engineering on a column based on value counts.
+- **TargetEncoder** - Categorical feature engineering on a column based on target means.
+- **MultiColumnEncoder** - Apply a column encoder to multiple columns.
 - **FoldEstimator** - K-fold on scikit estimator wrapped into an estimator.
 - **FoldLightGBM** - K-fold on LGBM wrapped into an estimator.
 - **FoldXGBoost** - K-fold on XGBoost wrapped into an estimator.
@@ -22,11 +22,13 @@ Machine learnings components built to extend scikit-learn. All components use sc
 
 ### Hierachy
     xklearn
-    |
+    │
     ├── preprocessing
-    │   ├── CountEncoder      
-    │   └── TargetEncoder
-    |
+    │   ├── CategoryEncoder
+    │   ├── CountEncoder
+    │   ├── TargetEncoder      
+    │   └── MultiColumnEncoder
+    │
     └── models
         ├── FoldEstimator
         ├── FoldLGBM
