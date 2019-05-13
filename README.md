@@ -10,8 +10,10 @@ Machine learnings components built to extend scikit-learn. All components use sc
     pip install xklearn
 
 ## Components
-- **TargetEncoder** - Categorical feature engineering based on target means.
+- **CategoryEncoder** - Like scikit's LabelEncoder but supports NaNs and missing values.
 - **CountEncoder** - Categorical feature engineering based on value counts.
+- **TargetEncoder** - Categorical feature engineering based on target means.
+- **MultiColumnEncoder** - Apply a column encoder to multiple columns
 - **FoldEstimator** - K-fold cross validation meta estimator.
 - **FoldLGBM** - K-fold cross validation meta LGBM.
 - **StackingClassifier** - Stack an ensemble of classifiers with a meta classifier.
@@ -19,9 +21,11 @@ Machine learnings components built to extend scikit-learn. All components use sc
 
 ### Hierachy
     xklearn
+    |
     ├── preprocessing
     │   ├── CountEncoder      
-    │   └── TargetEncoder    
+    │   └── TargetEncoder
+    |
     └── models
         ├── FoldEstimator
         ├── FoldLGBM
@@ -32,15 +36,59 @@ Machine learnings components built to extend scikit-learn. All components use sc
 
     from xklearn.models import FoldEstimator
 
+### CategoryEncoder
+Wraps scikit's LabelEncoder, allowing missing and unseen values to be handled.
+
+#### Arguments
+`unseen` - Strategy for handling unseen values. See replacement strategies below for options.
+
+`missing` - Strategy for handling missing values. See replacement strategies below for options.
+
+##### Replacement strategies
+
+`'encode'` - Replace value with -1.
+
+`'nan'` - Replace value with np.nan.
+
+`'error'` - Raise ValueError.
+
+#### Example:
+```python
+ce = CategoryEncoder(unseen='nan', missing='nan')
+X[:, 0] = ce.fit_transform(X[:, 0])
+```
+
+### CountEncoder
+Replaces categorical values with their respective value count during training. Classes with a count of one and previously unseen classes during prediction are encoded as either one or NaN.
+
+#### Arguments
+`unseen` - Strategy for handling unseen values. See replacement strategies below for options.
+
+`missing` - Strategy for handling missing values. See replacement strategies below for options.
+
+##### Replacement strategies
+
+`'one'` - Replace value with 1.
+
+`'nan'` - Replace value with np.nan.
+
+`'error'` - Raise ValueError.
+
+#### Example:
+```python
+ce = CountEncoder(unseen='one')
+X[:, 0] = ce.fit_transform(X[:, 0])
+```
+
 ### TargetEncoder
 Performs target mean encoding of categorical features with optional smoothing.
 
 #### Arguments
 `smoothing` - Smoothing weight.
 
-`unseen` - Strategy for handling unseen values. Se replacement strategies below for options.
+`unseen` - Strategy for handling unseen values. See replacement strategies below for options.
 
-`missing` - Strategy for handling missing values. Se replacement strategies below for options.
+`missing` - Strategy for handling missing values. See replacement strategies below for options.
 
 ##### Replacement strategies
 
@@ -54,29 +102,24 @@ Performs target mean encoding of categorical features with optional smoothing.
 
 ```python
 te = TargetEncoder(smoothing=10)
-X[0] = te.fit_transform(X[0], y)
+X[:, 0] = te.fit_transform(X[:, 0], y)
 ```
 
-### CountEncoder
-Replaces categorical values with their respective value count during training. Classes with a count of one and previously unseen classes during prediction are encoded as either one or nan.
+### MultiColumnEncoder
+Applies a column encoder over multiple columns.
 
 #### Arguments
-`unseen` - Strategy for handling unseen values. Se replacement strategies below for options.
+`enc` - Base encoder that will be applied to selected columns
 
-`missing` - Strategy for handling missing values. Se replacement strategies below for options.
-
-##### Replacement strategies
-
-`'one'` - Replace value with 1.
-
-`'nan'` - Replace value with np.nan.
-
-`'error'` - Raise ValueError.
+`columns` - Column selection, either bool-mask, indices or None (default=None).
 
 #### Example:
 ```python
-ce = CountEncoder(unseen='one')
-X[0] = ce.fit_transform(X[0])
+columns = [1, 3, 4]
+enc = CountEncoder()
+
+mce = MultiColumnEncoder(enc, columns)
+X = mce.fit_transform(X)
 ```
 
 ### FoldEstimator
