@@ -17,7 +17,7 @@ class FoldEstimator(BaseEstimator):
     ''' Fold Estimator
 
     Meta estimator that performs cross validation over k folds. Can optionally
-    be used as a ensemble of k estimators.
+    be used as an ensemble of k estimators.
 
     Parameters
     ----------
