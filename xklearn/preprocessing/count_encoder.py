@@ -9,10 +9,10 @@
 '''
 
 from warnings import warn
-from ..preprocessing.util import check_error_strat, is_float_array
+import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.validation import column_or_1d, check_is_fitted
-import numpy as np
+from ..preprocessing.util import check_error_strat, is_float_array
 
 class CountEncoder(BaseEstimator, TransformerMixin):
     ''' Count Encoder
@@ -67,7 +67,7 @@ class CountEncoder(BaseEstimator, TransformerMixin):
 
         check_error_strat(np.isnan(X), self.missing, 'missing')
 
-        self.classes_, self.counts_ = np.unique(X[np.isfinite(X)], 
+        self.classes_, self.counts_ = np.unique(X[np.isfinite(X)],
                                                 return_counts=True)
 
         if self.classes_.shape[0] != np.unique(self.counts_).shape[0]:
@@ -101,7 +101,7 @@ class CountEncoder(BaseEstimator, TransformerMixin):
 
         missing_mask = np.isnan(X)
         encode_mask = np.invert(missing_mask)
-        unseen_mask = np.bitwise_xor(np.isin(X, self.classes_, invert=True), 
+        unseen_mask = np.bitwise_xor(np.isin(X, self.classes_, invert=True),
                                      missing_mask)
 
         check_error_strat(missing_mask, self.missing, 'missing')
@@ -114,7 +114,7 @@ class CountEncoder(BaseEstimator, TransformerMixin):
 
         # Perform replacement with lookup
         X[encode_mask] = np.take(self.lut_[:, 1], \
-                                 np.take(np.searchsorted(self.lut_[:, 0], 
+                                 np.take(np.searchsorted(self.lut_[:, 0],
                                                          self.classes_),
                                          indices))
 
@@ -128,10 +128,13 @@ class CountEncoder(BaseEstimator, TransformerMixin):
         return X
 
 def strat_to_default(strat):
+    ''' Choose a default value according to strategy
+    '''
 
     if strat == 'one':
         return 1
-    elif strat == 'nan':
+
+    if strat == 'nan':
         return np.nan
-    else:
-        return None
+
+    return None

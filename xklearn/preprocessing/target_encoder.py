@@ -9,10 +9,10 @@
 '''
 
 from warnings import warn
-from ..preprocessing.util import check_error_strat
+import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.validation import column_or_1d, check_is_fitted
-import numpy as np
+from ..preprocessing.util import check_error_strat
 
 class TargetEncoder(BaseEstimator, TransformerMixin):
     ''' Target Encoder
@@ -72,11 +72,11 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
 
         target_mean = np.mean(y)
 
-        self.default_unseen_ = strat_to_default(self.unseen, 
+        self.default_unseen_ = strat_to_default(self.unseen,
                                                 target_mean)
 
-        self.default_missing_ = strat_to_default(self.missing, 
-                                                target_mean)
+        self.default_missing_ = strat_to_default(self.missing,
+                                                 target_mean)
 
         self.classes_, counts = np.unique(X[encode_mask], return_counts=True)
         self.class_means_ = np.zeros_like(self.classes_, dtype='float64')
@@ -97,8 +97,8 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
 
             self.class_means_ = (counts * self.class_means_ + self.smoothing * target_mean)\
                                 / (counts + self.smoothing)
-            
-        if self.unseen is not 'error':
+
+        if self.unseen != 'error':
             self.classes_ = np.append(self.classes_, [np.max(self.classes_) + 1])
             self.class_means_ = np.append(self.class_means_, [self.default_unseen_])
 
@@ -131,7 +131,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
 
         missing_mask = np.isnan(X)
         encode_mask = np.invert(missing_mask)
-        unseen_mask = np.bitwise_xor(np.isin(X, self.classes_, invert=True), 
+        unseen_mask = np.bitwise_xor(np.isin(X, self.classes_, invert=True),
                                      missing_mask)
 
         check_error_strat(missing_mask, self.missing, 'missing')
@@ -144,7 +144,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
 
         # Perform replacement with lookup
         X[encode_mask] = np.take(self.lut_[:, 1], \
-                                 np.take(np.searchsorted(self.lut_[:, 0], 
+                                 np.take(np.searchsorted(self.lut_[:, 0],
                                                          self.classes_),
                                          indices))
 
@@ -180,14 +180,14 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
 
         target_mean = np.mean(y)
 
-        self.default_unseen_ = strat_to_default(self.unseen, 
+        self.default_unseen_ = strat_to_default(self.unseen,
                                                 target_mean)
 
-        self.default_missing_ = strat_to_default(self.missing, 
-                                                target_mean)
+        self.default_missing_ = strat_to_default(self.missing,
+                                                 target_mean)
 
-        self.classes_, indices, counts = np.unique(X[encode_mask], 
-                                                   return_inverse=True, 
+        self.classes_, indices, counts = np.unique(X[encode_mask],
+                                                   return_inverse=True,
                                                    return_counts=True)
 
         self.class_means_ = np.zeros_like(self.classes_, dtype='float64')
@@ -220,7 +220,7 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
 
         # Perform replacement with lookup
         X[encode_mask] = np.take(self.lut_[:, 1], \
-                                 np.take(np.searchsorted(self.lut_[:, 0], 
+                                 np.take(np.searchsorted(self.lut_[:, 0],
                                                          self.classes_),
                                          indices))
 
@@ -229,12 +229,14 @@ class TargetEncoder(BaseEstimator, TransformerMixin):
 
         return X
 
-
 def strat_to_default(strat, global_mean=None):
+    ''' Choose a default value according to strategy
+    '''
 
     if strat == 'global':
         return global_mean
-    elif strat == 'nan':
+
+    if strat == 'nan':
         return np.nan
-    else:
-        return None
+
+    return None

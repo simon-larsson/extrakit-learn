@@ -9,9 +9,9 @@
 '''
 
 from copy import copy
+import numpy as np
 from sklearn.utils.validation import check_array, check_is_fitted
 from sklearn.base import BaseEstimator, TransformerMixin
-import numpy as np
 
 class MultiColumnEncoder(BaseEstimator, TransformerMixin):
     ''' Multi-Column Encoder
@@ -20,7 +20,7 @@ class MultiColumnEncoder(BaseEstimator, TransformerMixin):
 
     Parameters
     ----------
-    enc : Base encoder that should be used on columns 
+    enc : Base encoder that should be used on columns
 
     columns : Indices or mask to select columns for encoding, list-like
               `columns=None` encodes all columns.
@@ -57,14 +57,14 @@ class MultiColumnEncoder(BaseEstimator, TransformerMixin):
 
             for col in X.T:
                 enc = copy(self.enc)
-                enc.fit(col)
+                enc.fit(col, y)
                 self.encs_.append(enc)
 
         elif len(self.columns) > 0:
 
-            for col in X[:, self.columns].T:            
+            for col in X[:, self.columns].T:
                 enc = copy(self.enc)
-                enc.fit(col)
+                enc.fit(col, y)
                 self.encs_.append(enc)
 
         self.n_features_ = X.shape[1]
@@ -105,7 +105,7 @@ class MultiColumnEncoder(BaseEstimator, TransformerMixin):
 
         return X
 
-    def fit_transform(self, X, y=None):
+    def fit_transform(self, X, y=None, **fit_params):
         ''' Combined fit and transform
 
         Parameters
@@ -116,6 +116,9 @@ class MultiColumnEncoder(BaseEstimator, TransformerMixin):
         y : None
             There is no need of a target in a transformer, yet the pipeline API
             requires this parameter.
+
+        fit_params : Parameters that should be fed to base encuder during fit.
+                     Dictionary (string -> object)
 
         Returns
         -------
@@ -134,14 +137,14 @@ class MultiColumnEncoder(BaseEstimator, TransformerMixin):
             for i, col in enumerate(X.T):
 
                 enc = copy(self.enc)
-                X[:, i] = enc.fit_transform(col)
+                X[:, i] = enc.fit_transform(col, y, fit_params)
                 self.encs_.append(enc)
         else:
 
             for col_idx in self.columns:
 
                 enc = copy(self.enc)
-                X[:, col_idx] = enc.fit_transform(X[:, col_idx])
+                X[:, col_idx] = enc.fit_transform(X[:, col_idx], y, fit_params)
                 self.encs_.append(enc)
 
         self.n_features_ = X.shape[1]
@@ -150,13 +153,15 @@ class MultiColumnEncoder(BaseEstimator, TransformerMixin):
         return X
 
 def to_column_indices(X, columns):
+    ''' Unify index masks and bool masks into bool masks
+    '''
 
     if columns is None:
         return None
-    else:
-        columns = np.array(columns).reshape(-1)
 
-        if X.shape[1] == columns.shape[0]:
-            return np.where(columns)[0]
-        else:
-            return columns
+    columns = np.array(columns).reshape(-1)
+
+    if X.shape[1] == columns.shape[0]:
+        return np.where(columns)[0]
+
+    return columns

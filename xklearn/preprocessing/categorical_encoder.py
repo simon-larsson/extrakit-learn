@@ -1,6 +1,6 @@
 '''
 -------------------------------------------------------
-    Categorical Encoder - extrakit-learn
+    Category Encoder - extrakit-learn
 
     Author: Simon Larsson <larssonsimon0@gmail.com>
 
@@ -8,16 +8,15 @@
 -------------------------------------------------------
 '''
 
-from ..preprocessing.util import is_float_array, \
-is_object_array, check_error_strat, correct_dtype
-
+import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.validation import column_or_1d, check_is_fitted
 from sklearn.preprocessing import LabelEncoder
-import numpy as np
+from ..preprocessing.util import is_float_array, is_object_array, \
+    check_error_strat
 
-class CategoricalEncoder(BaseEstimator, TransformerMixin):
-    ''' Categorical Encoder
+class CategoryEncoder(BaseEstimator, TransformerMixin):
+    ''' Category Encoder
 
     Extends scikit's labels encoder by allowing to encode missing
     and previously unseen values.
@@ -43,19 +42,8 @@ class CategoricalEncoder(BaseEstimator, TransformerMixin):
             raise ValueError('Value of `missing` {} is not a valid replacement '
                              'strategy, {}'.format(missing, replace_strats))
 
-        if unseen == 'encode':
-            self.default_unseen_ = -1
-        elif unseen == 'nan':
-            self.default_unseen_ = np.nan
-        else:
-            self.default_unseen_ = None
-
-        if missing == 'encode':
-            self.default_missing_ = -1
-        elif missing == 'nan':
-            self.default_missing_ = np.nan
-        else:
-            self.default_missing_ = None
+        self.default_unseen_ = strat_to_default(unseen)
+        self.default_missing_ = strat_to_default(missing)
 
         self.unseen = unseen
         self.missing = missing
@@ -120,9 +108,9 @@ class CategoricalEncoder(BaseEstimator, TransformerMixin):
 
         if is_object_array(X):
             missing_mask = [x is np.nan for x in X]
-            unseen_mask = np.bitwise_xor(np.isin(X, self.le_.classes_, invert=True), 
-                                        missing_mask)
-            
+            unseen_mask = np.bitwise_xor(np.isin(X, self.le_.classes_, invert=True),
+                                         missing_mask)
+
             check_error_strat(missing_mask, self.missing, 'missing')
             check_error_strat(unseen_mask, self.unseen, 'unseen')
 
@@ -141,8 +129,8 @@ class CategoricalEncoder(BaseEstimator, TransformerMixin):
 
         elif is_float_array(X):
             missing_mask = np.isnan(X)
-            unseen_mask = np.bitwise_xor(np.isin(X, self.le_.classes_, invert=True), 
-                                        missing_mask)
+            unseen_mask = np.bitwise_xor(np.isin(X, self.le_.classes_, invert=True),
+                                         missing_mask)
 
             check_error_strat(missing_mask, self.missing, 'missing')
             check_error_strat(unseen_mask, self.unseen, 'unseen')
@@ -158,7 +146,7 @@ class CategoricalEncoder(BaseEstimator, TransformerMixin):
                               self.default_unseen_,
                               [],
                               self.default_missing_,
-                              missing_mask)            
+                              missing_mask)
 
         else:
             X = self.le_.transform(X)
@@ -196,7 +184,7 @@ class CategoricalEncoder(BaseEstimator, TransformerMixin):
                               None,
                               [],
                               self.default_missing_,
-                              missing_mask) 
+                              missing_mask)
 
         elif is_float_array(X):
 
@@ -210,7 +198,7 @@ class CategoricalEncoder(BaseEstimator, TransformerMixin):
                               None,
                               [],
                               self.default_missing_,
-                              missing_mask) 
+                              missing_mask)
 
         else:
             X = self.le_.transform(X)
@@ -220,9 +208,34 @@ class CategoricalEncoder(BaseEstimator, TransformerMixin):
         return X
 
 def encode_with_masks(X, le, default_unseen, unseen_mask, default_missing, missing_mask):
+    ''' Apply encoding values values with masks
+    '''
+
     encode_mask = np.invert(unseen_mask | missing_mask)
 
     X[encode_mask] = le.transform(X[encode_mask])
     X[unseen_mask] = default_unseen
     X[missing_mask] = default_missing
     return X
+
+def correct_dtype(X, default_unseen, unseen_mask, default_missing, missing_mask):
+    ''' Cast array as correct dtype, int when possible
+    '''
+
+    if (default_unseen is np.nan and np.any(unseen_mask)) or \
+       (default_missing is np.nan and np.any(missing_mask)):
+        return X.astype('float')
+
+    return X.astype('int')
+
+def strat_to_default(strat):
+    ''' Choose a default value according to strategy
+    '''
+
+    if strat == 'encode':
+        return -1
+
+    if strat == 'nan':
+        return np.nan
+
+    return None

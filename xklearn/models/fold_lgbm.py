@@ -27,13 +27,15 @@ class FoldLGBM(BaseEstimator):
 
     metric : Evaluations metric, func(y, y_)
 
-    fit_params : Parameters that should be fed to estimator during fit, dict
+    fit_params : Parameters that should be fed to estimator during fit. 
+                 Dictionary (string -> object)
 
     ensemble : Flag for post fit behaviour
                 True: Continue as a ensemble trained on separate folds
                 False: Retrain one estimator on full data
 
-    refit_params : Parameters that should be fed to estimator during refit, dict
+    refit_params : Parameters that should be fed to estimator during refit. 
+                   Dictionary (string -> object)
                    Only used when `ensemble=False`
 
     verbose : Printing of intermediate results, bool or int
