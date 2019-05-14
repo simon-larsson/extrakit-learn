@@ -30,41 +30,36 @@ class FoldXGBoost(BaseEstimator):
     fit_params : Parameters that should be fed to estimator during fit. 
                  Dictionary (string -> object)
 
-    ensemble : Flag for post fit behaviour
-                True: Continue as an ensemble trained on separate folds
-                False: Retrain one estimator on full data
+    refit_full : Flag for post fit behaviour
+                 True: Retrain one estimator on full data
+                 False: Continue as an ensemble trained on separate folds
 
     refit_params : Parameters that should be fed to estimator during refit. 
                    Dictionary (string -> object)
-                   Only used when `ensemble=False`
 
-    verbose : Printing of intermediate results, bool or int
+    verbose : Printing of fold scores, bool or int
     '''
 
-    def __init__(self, xgb, fold, metric, fit_params={}, ensemble=False, refit_params={}, verbose=0):
+    def __init__(self, xgb, fold, metric, fit_params={}, refit_full=False, refit_params={}, verbose=1):
 
-        proba_metric = metric.__name__ in ['roc_auc_score']
-        regressor = issubclass(type(xgb), RegressorMixin)
+        is_proba_metric = metric.__name__ in ['roc_auc_score']
+        is_regressor = issubclass(type(xgb), RegressorMixin)
 
-        if proba_metric and regressor:
+        if is_proba_metric and is_regressor:
             raise ValueError('Cannot be both a regressor and use a metric that '
                              'requires `predict_proba`')
 
-        if proba_metric and not hasattr(xgb, 'predict_proba'):
+        if is_proba_metric and not hasattr(xgb, 'predict_proba'):
             raise ValueError('Metric `{}` requires a classifier that implements '
                              '`predict_proba`'.format(metric.__name__))
-
-        if not regressor and ensemble and not hasattr(xgb, 'predict_proba'):
-            raise ValueError('Can only ensemble classifiers that implement '
-                             '`predict_proba`')
 
         self.xgb = xgb
         self.fit_params = fit_params
         self.fold = fold
         self.metric = metric
-        self.regressor = regressor
-        self.proba_metric = proba_metric
-        self.ensemble = ensemble
+        self.is_regressor_ = is_regressor
+        self.is_proba_metric_ = is_proba_metric
+        self.refit_full = refit_full
         self.refit_params = refit_params
         self.verbose = verbose
 
@@ -87,15 +82,15 @@ class FoldXGBoost(BaseEstimator):
 
         X, y = check_X_y(X, y, accept_sparse=True)
 
-        if self.ensemble:
+        if not self.refit_full:
             self.xgbs_ = []
 
         self.oof_scores_ = []
 
-        if not self.regressor:
+        if not self.is_regressor_:
             self.n_classes_ = np.unique(y).shape[0]
 
-        if self.proba_metric:
+        if self.is_proba_metric_:
             self.oof_y_ = np.zeros((X.shape[0], self.n_classes_),
                                    dtype=np.float64)
         else:
@@ -107,14 +102,14 @@ class FoldXGBoost(BaseEstimator):
             X_fold, y_fold = X[fold_idx], y[fold_idx]
             X_oof, y_oof = X[oof_idx], y[oof_idx]
 
-            if self.ensemble:
-                xgb = copy(self.xgb)
+            if self.refit_full:
+                xgb = self.xgb 
             else:
-                xgb = self.xgb
+                xgb = copy(self.xgb)
 
             xgb.fit(X_fold, y_fold,
                     sample_weight=self.fit_params.get('sample_weight'),
-                    eval_set=(X_oof, y_oof),
+                    eval_set=[(X_oof, y_oof)],
                     eval_metric=self.fit_params.get('eval_metric'),
                     early_stopping_rounds=self.fit_params.get('early_stopping_rounds'),
                     verbose=self.fit_params.get('verbose', self.verbose),
@@ -123,7 +118,7 @@ class FoldXGBoost(BaseEstimator):
                     callbacks=self.fit_params.get('callbacks')
                     )
 
-            if self.proba_metric:
+            if self.is_proba_metric_:
                 y_oof_ = xgb.predict_proba(X_oof)
                 self.oof_y_[oof_idx] = y_oof_
                 y_oof_ = y_oof_[:, 0]
@@ -134,7 +129,7 @@ class FoldXGBoost(BaseEstimator):
             oof_score = self.metric(y_oof, y_oof_)
             self.oof_scores_.append(oof_score)
 
-            if self.ensemble:
+            if not self.refit_full:
                 self.xgbs_.append(xgb)
 
             if self.verbose:
@@ -143,7 +138,7 @@ class FoldXGBoost(BaseEstimator):
 
             current_fold += 1
 
-        if not self.ensemble:
+        if self.refit_full:
             xgb.fit(X_fold, y_fold,
                     sample_weight=self.refit_params.get('sample_weight'),
                     eval_set=self.refit_params.get('eval_set'),
@@ -188,13 +183,13 @@ class FoldXGBoost(BaseEstimator):
         X = check_array(X, accept_sparse=True)
         check_is_fitted(self, 'n_features_')
 
-        if self.ensemble:
+        if self.refit_full:
+            y_ = self.xgb.predict_proba(X)
+        else:
             y_ = np.zeros((X.shape[0], self.n_classes_), dtype=np.float64)
 
             for xgb in self.xgbs_:
                 y_ += xgb.predict_proba(X) / self.n_folds_
-        else:
-            y_ = self.xgb.predict_proba(X)
 
         return y_
 
@@ -215,16 +210,16 @@ class FoldXGBoost(BaseEstimator):
         X = check_array(X, accept_sparse=True)
         check_is_fitted(self, 'n_features_')
 
-        if self.regressor and self.ensemble:
+        if not (self.is_regressor_ or self.refit_full):
 
             y_ = np.zeros((X.shape[0],), dtype=np.float64)
 
             for xgb in self.xgbs_:
                 y_ += xgb.predict(X) / self.n_folds_
 
-        elif self.ensemble:
-            y_ = np.argmax(self.predict_proba(X), axis=1)
+        elif self.refit_full:
+            y_ = self.xgb.predict(X)     
         else:
-            y_ = self.xgb.predict(X)
+            y_ = np.argmax(self.predict_proba(X), axis=1)
 
         return y_

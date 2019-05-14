@@ -30,18 +30,17 @@ class FoldLightGBM(BaseEstimator):
     fit_params : Parameters that should be fed to estimator during fit. 
                  Dictionary (string -> object)
 
-    ensemble : Flag for post fit behaviour
-                True: Continue as an ensemble trained on separate folds
-                False: Retrain one estimator on full data
+    refit_full : Flag for post fit behaviour
+                 True: Retrain one estimator on full data
+                 False: Continue as an ensemble trained on separate folds
 
     refit_params : Parameters that should be fed to estimator during refit. 
                    Dictionary (string -> object)
-                   Only used when `ensemble=False`
 
-    verbose : Printing of intermediate results, bool or int
+    verbose : Printing of fold scores, bool or int
     '''
 
-    def __init__(self, lgbm, fold, metric, fit_params={}, ensemble=False, refit_params={}, verbose=0):
+    def __init__(self, lgbm, fold, metric, fit_params={}, refit_full=False, refit_params={}, verbose=1):
 
         proba_metric = metric.__name__ in ['roc_auc_score']
         regressor = issubclass(type(lgbm), RegressorMixin)
@@ -54,17 +53,13 @@ class FoldLightGBM(BaseEstimator):
             raise ValueError('Metric `{}` requires a classifier that implements '
                              '`predict_proba`'.format(metric.__name__))
 
-        if not regressor and ensemble and not hasattr(lgbm, 'predict_proba'):
-            raise ValueError('Can only ensemble classifiers that implement '
-                             '`predict_proba`')
-
         self.lgbm = lgbm
         self.fit_params = fit_params
         self.fold = fold
         self.metric = metric
         self.regressor = regressor
         self.proba_metric = proba_metric
-        self.ensemble = ensemble
+        self.refit_full = refit_full
         self.refit_params = refit_params
         self.verbose = verbose
 
@@ -87,7 +82,7 @@ class FoldLightGBM(BaseEstimator):
 
         X, y = check_X_y(X, y, accept_sparse=True)
 
-        if self.ensemble:
+        if not self.refit_full:
             self.lgbms_ = []
 
         self.oof_scores_ = []
@@ -107,11 +102,11 @@ class FoldLightGBM(BaseEstimator):
             X_fold, y_fold = X[fold_idx], y[fold_idx]
             X_oof, y_oof = X[oof_idx], y[oof_idx]
 
-            if self.ensemble:
-                lgbm = copy(self.lgbm)
+            if self.refit_full:
+                lgbm = self.lgbm    
             else:
-                lgbm = self.lgbm
-
+                lgbm = copy(self.lgbm)
+                
             lgbm.fit(X_fold, y_fold,
                      sample_weight=self.fit_params.get('sample_weight'),
                      init_score=self.fit_params.get('init_score'),
@@ -138,7 +133,7 @@ class FoldLightGBM(BaseEstimator):
             oof_score = self.metric(y_oof, y_oof_)
             self.oof_scores_.append(oof_score)
 
-            if self.ensemble:
+            if not self.refit_full:
                 self.lgbms_.append(lgbm)
 
             if self.verbose:
@@ -147,7 +142,7 @@ class FoldLightGBM(BaseEstimator):
 
             current_fold += 1
 
-        if not self.ensemble:
+        if self.refit_full:
             self.lgbm.fit(X, y,
                           sample_weight=self.refit_params.get('sample_weight'),
                           init_score=self.refit_params.get('init_score'),
@@ -196,13 +191,13 @@ class FoldLightGBM(BaseEstimator):
         X = check_array(X, accept_sparse=True)
         check_is_fitted(self, 'n_features_')
 
-        if self.ensemble:
+        if self.refit_full:
+            y_ = self.lgbm.predict_proba(X)
+        else:
             y_ = np.zeros((X.shape[0], self.n_classes_), dtype=np.float64)
 
             for lgbm in self.lgbms_:
                 y_ += lgbm.predict_proba(X) / self.n_folds_
-        else:
-            y_ = self.lgbm.predict_proba(X)
 
         return y_
 
@@ -223,16 +218,16 @@ class FoldLightGBM(BaseEstimator):
         X = check_array(X, accept_sparse=True)
         check_is_fitted(self, 'n_features_')
 
-        if self.regressor and self.ensemble:
+        if not (self.regressor or self.refit_full):
 
             y_ = np.zeros((X.shape[0],), dtype=np.float64)
 
             for lgbm in self.lgbms_:
                 y_ += lgbm.predict(X) / self.n_folds_
 
-        elif self.ensemble:
-            y_ = np.argmax(self.predict_proba(X), axis=1)
+        elif self.refit_full:
+            y_ = self.lgbm.predict(X)    
         else:
-            y_ = self.lgbm.predict(X)
+            y_ = np.argmax(self.predict_proba(X), axis=1)
 
         return y_
