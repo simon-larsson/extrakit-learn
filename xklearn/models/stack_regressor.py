@@ -30,7 +30,7 @@ class StackRegressor(BaseEstimator, RegressorMixin):
     refit : If sub-regressors should be refit, bool
     '''
 
-    def __init__(self, regs, meta_reg, keep_features=True, refit=True):
+    def __init__(self, regs, meta_reg, keep_features=False, refit=True):
         self.regs = regs
         self.meta_reg = meta_reg
         self.keep_features = keep_features
@@ -94,7 +94,7 @@ class StackRegressor(BaseEstimator, RegressorMixin):
 
         return self.meta_reg.predict(X_meta)
 
-def build_meta_X(regs, X=None, keep_features=True):
+def build_meta_X(regs, X=None, keep_features=False):
     ''' Build features that includes outputs of the sub-regressors
 
     Parameters

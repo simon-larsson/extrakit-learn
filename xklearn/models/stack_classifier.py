@@ -16,7 +16,7 @@ class StackClassifier(BaseEstimator, ClassifierMixin):
     ''' Stack Classifier
 
     Ensemble classifier that uses one meta classifiers and several sub-classifiers.
-    The sub-classifiers give their output to to the main classifier which will use
+    The sub-classifiers give their output to to the meta classifier which will use
     them as input features.
 
     Parameters
@@ -25,14 +25,17 @@ class StackClassifier(BaseEstimator, ClassifierMixin):
 
     meta_clf : Ensemble classifier that makes the final output, classifier
 
+    drop_first : Drop first class probability to avoid multi-collinearity, bool
+
     keep_features : If original input features should be used by meta_clf, bool
 
     refit : If sub-classifiers should be refit, bool
     '''
 
-    def __init__(self, clfs, meta_clf, keep_features=True, refit=True):
+    def __init__(self, clfs, meta_clf, drop_first=True, keep_features=False, refit=True):
         self.clfs = clfs
         self.meta_clf = meta_clf
+        self.drop_first = drop_first
         self.keep_features = keep_features
         self.refit = refit
 
@@ -117,7 +120,7 @@ class StackClassifier(BaseEstimator, ClassifierMixin):
 
         return self.meta_clf.predict(X_meta)
 
-def build_meta_X(clfs, X=None, keep_features=True):
+def build_meta_X(clfs, X=None, drop_first=True, keep_features=False):
     ''' Build features that includes outputs of the sub-classifiers
 
     Parameters
@@ -126,6 +129,10 @@ def build_meta_X(clfs, X=None, keep_features=True):
 
     X : {array-like, sparse matrix}, shape (n_samples, n_features)
         The prediction input samples.
+
+    drop_first : Drop first proba to avoid multi-collinearity, bool
+
+    keep_features : If original input features should be used by meta_clf, bool
 
     Returns
     -------
@@ -141,9 +148,15 @@ def build_meta_X(clfs, X=None, keep_features=True):
     for clf in clfs:
 
         if X_meta is None:
-            X_meta = clf.predict_proba(X)
+            if drop_first:
+                X_meta = clf.predict_proba(X)
+            else:
+                X_meta = clf.predict_proba(X)[:, 1:]
         else:
-            y_ = clf.predict_proba(X)
+            if drop_first:
+                y_ = clf.predict_proba(X)
+            else:
+                y_ = clf.predict_proba(X)[:, 1:]
             X_meta = np.hstack([X_meta, y_])
 
     return X_meta
