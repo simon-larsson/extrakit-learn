@@ -148,9 +148,9 @@ K-fold wrapped into an estimator that performs cross validation over a selected 
 
 `metric` - Evaluation metric.
 
-`ensemble` - Flag indicting post fit behaviour. True will make it a stacked ensemble, False will do a full refit on the full data.
+`refit_full` - Flag indicting post fit behaviour. True will do a full refit on the full data, False will make it a stacked ensemble trained on the different folds.
 
-`verbose` - Flag for printing intermediate scores during fit.
+`verbose` - Flag for printing fold scores during fit.
 
 #### Example
 ```python
@@ -187,11 +187,11 @@ K-fold wrapped into an estimator that performs cross validation on a LGBM over a
 
 `fit_params` - Dictionary of parameter that should be fed to the fit method.
 
-`ensemble` - Flag indicting post fit behaviour. True will make it a stacked ensemble, False will do a full refit on the full data.
+`refit_full` - Flag indicting post fit behaviour. True will do a full refit on the full data, False will make it a stacked ensemble trained on the different folds.
 
-`refit_params` - Dictionary of parameter that should be fed to the refit if ensemble=False.
+`refit_params` - Dictionary of parameter that should be fed to the refit if refit_full=False.
 
-`verbose` - Flag for printing intermediate scores during fit.
+`verbose` - Flag for printing fold scores during fit.
 
 #### Example
 ```python
@@ -235,11 +235,11 @@ K-fold wrapped into an estimator that performs cross validation on a XGBoost ove
 
 `fit_params` - Dictionary of parameter that should be fed to the fit method.
 
-`ensemble` - Flag indicting post fit behaviour. True will make it a stacked ensemble, False will do a full refit on the full data.
+`refit_full` - Flag indicting post fit behaviour. True will do a full refit on the full data, False will make it a stacked ensemble trained on the different folds.
 
-`refit_params` - Dictionary of parameter that should be fed to the refit if ensemble=False.
+`refit_params` - Dictionary of parameter that should be fed to the refit if refit_full=False.
 
-`verbose` - Flag for printing intermediate scores during fit.
+`verbose` - Flag for printing fold scores during fit.
 
 #### Example
 ```python
@@ -281,7 +281,7 @@ Ensemble classifier that stacks an ensemble of classifiers by using their output
 
 `keep_features` - Flag to train the meta classifier on the original features too.
 
-`refit` - Flag to retrain the ensemble of classifiers.
+`refit` - Flag to retrain the ensemble of classifiers during fit.
 
 #### Example
 ```python
@@ -305,9 +305,11 @@ Ensemble regressor that stacks an ensemble of regressors by using their outputs 
 
 `meta_reg` - Meta regressor that stacks the predictions of the ensemble.
 
+`drop_first` : Drop first class probability to avoid multi-collinearity.
+
 `keep_features` - Flag to train the meta regressor on the original features too.
 
-`refit` - Flag to retrain the ensemble of regressors.
+`refit` - Flag to retrain the ensemble of regressors during fit.
 
 #### Example
 ```python
