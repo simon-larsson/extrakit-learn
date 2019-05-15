@@ -16,7 +16,7 @@ Machine learnings components built to extend scikit-learn. All components use sc
 - [MultiColumnEncoder](https://github.com/simon-larsson/extrakit-learn#multicolumnencoder) - Apply a column encoder to multiple columns.
 - [FoldEstimator](https://github.com/simon-larsson/extrakit-learn#foldestimator) - K-fold on scikit estimator wrapped into an estimator.
 - [FoldLightGBM](https://github.com/simon-larsson/extrakit-learn#foldlightgbm) - K-fold on LGBM wrapped into an estimator.
-- [FoldXGBoost](https://github.com/simon-larsson/extrakit-learn#foldxgb) - K-fold on XGBoost wrapped into an estimator.
+- [FoldXGBoost](https://github.com/simon-larsson/extrakit-learn#foldxgboost) - K-fold on XGBoost wrapped into an estimator.
 - [StackClassifier](https://github.com/simon-larsson/extrakit-learn#stackclassifier) - Stack an ensemble of classifiers with a meta classifier.
 - [StackRegressor](https://github.com/simon-larsson/extrakit-learn#stackregressor) - Stack an ensemble of regressors with a meta regressor.
 
