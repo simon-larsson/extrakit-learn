@@ -10,15 +10,15 @@ Machine learnings components built to extend scikit-learn. All components use sc
     pip install xklearn
 
 ## Components
-- **CategoryEncoder** - Like scikit's LabelEncoder but supports NaNs and unseen values.
-- **CountEncoder** - Categorical feature engineering on a column based on value counts.
-- **TargetEncoder** - Categorical feature engineering on a column based on target means.
-- **MultiColumnEncoder** - Apply a column encoder to multiple columns.
-- **FoldEstimator** - K-fold on scikit estimator wrapped into an estimator.
-- **FoldLightGBM** - K-fold on LGBM wrapped into an estimator.
-- **FoldXGBoost** - K-fold on XGBoost wrapped into an estimator.
-- **StackClassifier** - Stack an ensemble of classifiers with a meta classifier.
-- **StackRegressor** - Stack an ensemble of regressors with a meta regressor.
+- [CategoryEncoder](https://github.com/simon-larsson/extrakit-learn#categoryencoder) - Like scikit's LabelEncoder but supports NaNs and unseen values.
+- [CountEncoder](https://github.com/simon-larsson/extrakit-learn#countencoder) - Categorical feature engineering on a column based on value counts.
+- [TargetEncoder](https://github.com/simon-larsson/extrakit-learn#targetencoder) - Categorical feature engineering on a column based on target means.
+- [MultiColumnEncoder](https://github.com/simon-larsson/extrakit-learn#multicolumnencoder) - Apply a column encoder to multiple columns.
+- [FoldEstimator](https://github.com/simon-larsson/extrakit-learn#foldestimator) - K-fold on scikit estimator wrapped into an estimator.
+- [FoldLightGBM](https://github.com/simon-larsson/extrakit-learn#foldlightgbm) - K-fold on LGBM wrapped into an estimator.
+- [FoldXGBoost](https://github.com/simon-larsson/extrakit-learn#foldxgb) - K-fold on XGBoost wrapped into an estimator.
+- [StackClassifier](https://github.com/simon-larsson/extrakit-learn#stackclassifier) - Stack an ensemble of classifiers with a meta classifier.
+- [StackRegressor](https://github.com/simon-larsson/extrakit-learn#stackregressor) - Stack an ensemble of regressors with a meta regressor.
 
 ### Hierachy
     xklearn
@@ -31,7 +31,8 @@ Machine learnings components built to extend scikit-learn. All components use sc
     │
     └── models
         ├── FoldEstimator
-        ├── FoldLGBM
+        ├── FoldLightGBM
+        ├── FoldXGBoost
         ├── StackClassifier
         └── StackRegressor
 
