@@ -9,7 +9,7 @@
 '''
 
 from sklearn.base import BaseEstimator, ClassifierMixin
-from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
+from sklearn.utils.validation import check_is_fitted
 import numpy as np
 
 class StackClassifier(BaseEstimator, ClassifierMixin):
@@ -56,8 +56,6 @@ class StackClassifier(BaseEstimator, ClassifierMixin):
             Returns self.
         '''
 
-        X, y = check_X_y(X, y, accept_sparse=True)
-
         # Refit of classifier ensemble
         if self.refit:
             for clf in self.clfs:
@@ -90,7 +88,6 @@ class StackClassifier(BaseEstimator, ClassifierMixin):
             Returns an array of probabilities, floats.
         '''
 
-        X = check_array(X, accept_sparse=True)
         check_is_fitted(self, 'n_features_')
 
         # Build new tier-2 features
@@ -112,7 +109,6 @@ class StackClassifier(BaseEstimator, ClassifierMixin):
             Returns an array of classifications, bools.
         '''
 
-        X = check_array(X, accept_sparse=True)
         check_is_fitted(self, 'n_features_')
 
         # Build new tier-2 features

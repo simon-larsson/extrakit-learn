@@ -9,7 +9,7 @@
 '''
 
 from sklearn.base import BaseEstimator, RegressorMixin
-from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
+from sklearn.utils.validation import check_is_fitted
 import numpy as np
 
 class StackRegressor(BaseEstimator, RegressorMixin):
@@ -53,8 +53,6 @@ class StackRegressor(BaseEstimator, RegressorMixin):
             Returns self.
         '''
 
-        X, y = check_X_y(X, y, accept_sparse=True)
-
         # Refit of regressor ensemble
         if self.refit:
             for reg in self.regs:
@@ -86,7 +84,6 @@ class StackRegressor(BaseEstimator, RegressorMixin):
             Returns an array of classifications, bools.
         '''
 
-        X = check_array(X, accept_sparse=True)
         check_is_fitted(self, 'n_features_')
 
         # Build new tier-2 features
