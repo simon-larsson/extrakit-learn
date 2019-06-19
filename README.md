@@ -102,7 +102,7 @@ Performs target mean encoding of categorical features with optional smoothing.
 
 ##### Replacement strategies
 
-`'one'` - Replace value with 1.
+`'global'` - Replace value with global target mean.
 
 `'nan'` - Replace value with np.nan.
 
