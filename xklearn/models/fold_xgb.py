@@ -80,7 +80,7 @@ class FoldXGBoost(BaseEstimator):
             Returns self.
         '''
 
-        X, y = check_X_y(X, y, accept_sparse=True)
+        X, y = check_X_y(X, y, accept_sparse=True, force_all_finite=False)
 
         if not self.refit_full:
             self.xgbs_ = []
@@ -180,7 +180,7 @@ class FoldXGBoost(BaseEstimator):
         if not hasattr(self.xgb, 'predict_proba'):
             raise ValueError('Base estimator does not support `predict_proba`')
 
-        X = check_array(X, accept_sparse=True)
+        X = check_array(X, accept_sparse=True, force_all_finite=False)
         check_is_fitted(self, 'n_features_')
 
         if self.refit_full:
@@ -207,7 +207,7 @@ class FoldXGBoost(BaseEstimator):
             Returns an array of predictions.
         '''
 
-        X = check_array(X, accept_sparse=True)
+        X = check_array(X, accept_sparse=True, force_all_finite=False)
         check_is_fitted(self, 'n_features_')
 
         if not (self.is_regressor_ or self.refit_full):
