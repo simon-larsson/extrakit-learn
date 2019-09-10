@@ -18,6 +18,8 @@ def compress_dataframe(df, verbose=True):
     ----------
     df : Dataframe subject to memory reduction, Pandas Dataframe
 
+    verbose : Flag for printing fold scores during fit, int/bool
+
     Returns
     -------
     df : Result of reduction, Pandas Dataframe
@@ -49,5 +51,5 @@ def compress_dataframe(df, verbose=True):
                     df[col] = df[col].astype(np.float64)    
     end_mem = df.memory_usage().sum() / 1024**2
     if verbose: 
-        print('Memory decreased to {:5.2f} MB ({:.1f}% reduction)'.format(end_mem, 100 * (start_mem - end_mem) / start_mem))
+        print('Dataframe memory decreased to {:5.2f} MB ({:.1f}% reduction)'.format(end_mem, 100 * (start_mem - end_mem) / start_mem))
     return df
