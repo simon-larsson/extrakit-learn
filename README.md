@@ -171,12 +171,12 @@ est.predict(X_test)
 ```
 Output:
 ```
-Finished fold 1 with score: 200.80226317887826
-Finished fold 2 with score: 261.23652389345705
-Finished fold 3 with score: 169.2403756418383
-Finished fold 4 with score: 186.79152045026424
-Finished fold 5 with score: 205.08937161000628
-Finished with a total score of: 204.6812549487968
+Finished fold 1 with score: 200.8023
+Finished fold 2 with score: 261.2365
+Finished fold 3 with score: 169.2404
+Finished fold 4 with score: 186.7915
+Finished fold 5 with score: 205.0894
+Finished with a total score of: 204.6813
 ```
 
 ### FoldLightGBM
@@ -219,12 +219,12 @@ fold_lgbm.predict(X_test)
 ```
 Output:
 ```
-Finished fold 1 with score: 0.9113924050632911
-Finished fold 2 with score: 0.9264705882352942
-Finished fold 3 with score: 0.9419354838709678
-Finished fold 4 with score: 0.918918918918919
-Finished fold 5 with score: 0.9152542372881356
-Finished with a total score of: 0.9224806201550387
+Finished fold 1 with score: 0.9114
+Finished fold 2 with score: 0.9265
+Finished fold 3 with score: 0.9419
+Finished fold 4 with score: 0.9189
+Finished fold 5 with score: 0.9152
+Finished with a total score of: 0.9225
 ```
 
 ### FoldXGBoost
@@ -267,12 +267,12 @@ fold_xgb.predict(X_test)
 ```
 Output:
 ```
-Finished fold 1 with score: 3212.836210862052
-Finished fold 2 with score: 2179.784382295313
-Finished fold 3 with score: 2707.846010269413
-Finished fold 4 with score: 2988.664327204228
-Finished fold 5 with score: 3281.4299457601005
-Finished with a total score of: 3274.900079180749
+Finished fold 1 with score: 3212.8362
+Finished fold 2 with score: 2179.7843
+Finished fold 3 with score: 2707.8460
+Finished fold 4 with score: 2988.6643
+Finished fold 5 with score: 3281.4299
+Finished with a total score of: 3274.9001
 ```
 
 ### StackClassifier
