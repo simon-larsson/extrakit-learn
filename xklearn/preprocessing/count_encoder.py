@@ -12,7 +12,7 @@ from warnings import warn
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.validation import column_or_1d, check_is_fitted
-from ..preprocessing.util import check_error_strat, is_float_array
+from ..preprocessing.utils import check_error_strat, is_float_array
 
 class CountEncoder(BaseEstimator, TransformerMixin):
     ''' Count Encoder
