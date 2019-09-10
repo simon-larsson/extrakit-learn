@@ -104,7 +104,7 @@ class CategoryEncoder(BaseEstimator, TransformerMixin):
 
 
         X = column_or_1d(X.copy(), warn=True)
-        check_is_fitted(self, 'n_classes')
+        check_is_fitted(self, 'classes_')
 
         if is_object_array(X):
             missing_mask = [x is np.nan for x in X]
