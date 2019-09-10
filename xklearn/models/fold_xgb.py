@@ -133,8 +133,8 @@ class FoldXGBoost(BaseEstimator):
                 self.xgbs_.append(xgb)
 
             if self.verbose:
-                print('Finished fold {} with score: {}'.format(current_fold,
-                                                               oof_score))
+                print('Finished fold {} with score: {:.4f}'.format(current_fold,
+                                                                   oof_score))
 
             current_fold += 1
 
@@ -156,7 +156,7 @@ class FoldXGBoost(BaseEstimator):
             self.oof_score_ = self.metric(y, self.oof_y_)
 
         if self.verbose:
-            print('Finished with a total score of: {}'.format(self.oof_score_))
+            print('Finished with a total score of: {:.4f}'.format(self.oof_score_))
 
         self.n_features_ = X.shape[1]
         self.n_folds_ = self.fold.n_splits
