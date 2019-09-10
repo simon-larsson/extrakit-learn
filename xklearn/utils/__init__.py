@@ -1,6 +1,6 @@
 '''
 -------------------------------------------------------
-    extrakit-learn
+    Utils - extrakit-learn
 
     Author: Simon Larsson <larssonsimon0@gmail.com>
 
@@ -8,6 +8,6 @@
 -------------------------------------------------------
 '''
 
-__all__ = ['models',
-           'preprocessing',
-           'utils']
+from ..utils import compress_dataframe
+
+__all__ = ['compress_dataframe']
