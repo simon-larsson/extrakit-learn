@@ -19,6 +19,7 @@ Machine learnings components built to extend scikit-learn. All components use sc
 - [FoldXGBoost](https://github.com/simon-larsson/extrakit-learn#foldxgboost) - K-fold on XGBoost wrapped into an estimator.
 - [StackClassifier](https://github.com/simon-larsson/extrakit-learn#stackclassifier) - Stack an ensemble of classifiers with a meta classifier.
 - [StackRegressor](https://github.com/simon-larsson/extrakit-learn#stackregressor) - Stack an ensemble of regressors with a meta regressor.
+- [compress_dataframe](https://github.com/simon-larsson/extrakit-learn#compress_dataframe) - Reduce memory of a Pandas dataframe.
 
 ### Hierachy
     xklearn
@@ -29,12 +30,14 @@ Machine learnings components built to extend scikit-learn. All components use sc
     │   ├── TargetEncoder      
     │   └── MultiColumnEncoder
     │
-    └── models
-        ├── FoldEstimator
-        ├── FoldLightGBM
-        ├── FoldXGBoost
-        ├── StackClassifier
-        └── StackRegressor
+    ├── models
+    │   ├── FoldEstimator
+    │   ├── FoldLightGBM
+    |   ├── FoldXGBoost
+    |   ├── StackClassifier
+    |   └── StackRegressor
+    |
+    └── utils
 
 ##### Example
 
@@ -324,4 +327,24 @@ stack_reg = StackRegressor(regs=ensemble, meta_reg=meta_reg, refit=True)
 
 stack_reg.fit(X_train, y_train)
 y_ = stack_reg.predict(X_test)
+```
+
+### compress_dataframe
+Reduce memory usage of a Pandas dataframe by finding columns that use larger variable types than unnecessary.
+
+#### Arguments
+`df` - Dataframe for memory reduction.
+
+`verbose` - Flag for printing result of memory reduction.
+
+#### Example
+```python
+from xklearn.utils import compress_dataframe
+...
+
+train = compress_dataframe(train, verbose=1)
+```
+Output:
+```
+Dataframe memory decreased to 169.60 MB (64.6% reduction)
 ```
