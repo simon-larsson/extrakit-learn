@@ -57,8 +57,8 @@ class FoldLightGBM(BaseEstimator):
         self.fit_params = fit_params
         self.fold = fold
         self.metric = metric
-        self.regressor = regressor
-        self.proba_metric = proba_metric
+        self.is_regressor_ = regressor
+        self.is_proba_metric_ = proba_metric
         self.refit_full = refit_full
         self.refit_params = refit_params
         self.verbose = verbose
@@ -87,10 +87,10 @@ class FoldLightGBM(BaseEstimator):
 
         self.oof_scores_ = []
 
-        if not self.regressor:
+        if not self.is_regressor_:
             self.n_classes_ = np.unique(y).shape[0]
 
-        if self.proba_metric:
+        if self.is_proba_metric_:
             self.oof_y_ = np.zeros((X.shape[0], self.n_classes_),
                                    dtype=np.float64)
         else:
@@ -122,10 +122,10 @@ class FoldLightGBM(BaseEstimator):
                      callbacks=self.fit_params.get('callbacks'),
                     )
 
-            if self.proba_metric:
+            if self.is_proba_metric_:
                 y_oof_ = lgbm.predict_proba(X_oof)
                 self.oof_y_[oof_idx] = y_oof_
-                y_oof_ = y_oof_[:, 0]
+                y_oof_ = y_oof_[:, 1]
             else:
                 y_oof_ = lgbm.predict(X_oof)
                 self.oof_y_[oof_idx] = y_oof_
@@ -158,8 +158,8 @@ class FoldLightGBM(BaseEstimator):
                           callbacks=self.refit_params.get('callbacks'),
                          )
 
-        if len(self.oof_y_.shape) > 1:
-            self.oof_score_ = self.metric(y, self.oof_y_[:, 0])
+        if self.is_proba_metric_:
+            self.oof_score_ = self.metric(y, self.oof_y_[:, 1])
         else:
             self.oof_score_ = self.metric(y, self.oof_y_)
 
@@ -218,7 +218,7 @@ class FoldLightGBM(BaseEstimator):
         X = check_array(X, accept_sparse=True, force_all_finite=False)
         check_is_fitted(self, 'n_features_')
 
-        if not (self.regressor or self.refit_full):
+        if not (self.is_regressor_ or self.refit_full):
 
             y_ = np.zeros((X.shape[0],), dtype=np.float64)
 

@@ -50,8 +50,8 @@ class FoldEstimator(BaseEstimator):
         self.est = est
         self.fold = fold
         self.metric = metric
-        self.regressor = regressor
-        self.proba_metric = proba_metric
+        self.is_regressor_ = regressor
+        self.is_proba_metric_ = proba_metric
         self.refit_full = refit_full
         self.verbose = verbose
 
@@ -79,10 +79,10 @@ class FoldEstimator(BaseEstimator):
 
         self.oof_scores_ = []
 
-        if not self.regressor:
+        if not self.is_regressor_:
             self.n_classes_ = np.unique(y).shape[0]
 
-        if self.proba_metric:
+        if self.is_proba_metric_:
             self.oof_y_ = np.zeros((X.shape[0], self.n_classes_),
                                    dtype=np.float64)
         else:
@@ -101,7 +101,7 @@ class FoldEstimator(BaseEstimator):
 
             est.fit(X_fold, y_fold)
 
-            if self.proba_metric:
+            if self.is_proba_metric_:
                 y_oof_ = est.predict_proba(X_oof)
                 self.oof_y_[oof_idx] = y_oof_
                 y_oof_ = y_oof_[:, 0]
@@ -181,7 +181,7 @@ class FoldEstimator(BaseEstimator):
             Returns an array of predictions.
         '''
 
-        if not (self.regressor or self.refit_full) and \
+        if not (self.is_regressor_ or self.refit_full) and \
             not hasattr(self.est, 'predict_proba'):
             raise ValueError('Can only ensemble classifiers that implement '
                              '`predict_proba`')
@@ -189,7 +189,7 @@ class FoldEstimator(BaseEstimator):
         X = check_array(X, accept_sparse=True)
         check_is_fitted(self, 'n_features_')
 
-        if not (self.regressor or self.refit_full):
+        if not (self.is_regressor_ or self.refit_full):
 
             y_ = np.zeros((X.shape[0],), dtype=np.float64)
 
