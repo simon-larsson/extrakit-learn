@@ -8,6 +8,6 @@
 -------------------------------------------------------
 '''
 
-from ..utils import compress_dataframe
+from .utils import compress_dataframe
 
 __all__ = ['compress_dataframe']

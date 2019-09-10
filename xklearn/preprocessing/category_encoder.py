@@ -12,7 +12,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.validation import column_or_1d, check_is_fitted
 from sklearn.preprocessing import LabelEncoder
-from ..preprocessing.util import is_float_array, is_object_array, \
+from ..preprocessing.utils import is_float_array, is_object_array, \
     check_error_strat
 
 class CategoryEncoder(BaseEstimator, TransformerMixin):
