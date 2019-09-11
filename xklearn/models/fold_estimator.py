@@ -104,7 +104,7 @@ class FoldEstimator(BaseEstimator):
             if self.is_proba_metric_:
                 y_oof_ = est.predict_proba(X_oof)
                 self.oof_y_[oof_idx] = y_oof_
-                y_oof_ = y_oof_[:, 0]
+                y_oof_ = y_oof_[:, 1]
             else:
                 y_oof_ = est.predict(X_oof)
                 self.oof_y_[oof_idx] = y_oof_
@@ -124,8 +124,8 @@ class FoldEstimator(BaseEstimator):
         if self.refit_full:
             self.est.fit(X, y)
 
-        if len(self.oof_y_.shape) > 1:
-            self.oof_score_ = self.metric(y, self.oof_y_[:, 0])
+        if self.is_proba_metric_:
+            self.oof_score_ = self.metric(y, self.oof_y_[:, 1])
         else:
             self.oof_score_ = self.metric(y, self.oof_y_)
 
