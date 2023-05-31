@@ -14,9 +14,9 @@ Machine learnings components built to extend scikit-learn. All components use sc
 - [CountEncoder](https://github.com/simon-larsson/extrakit-learn#countencoder) - Categorical feature engineering on a column based on value counts.
 - [TargetEncoder](https://github.com/simon-larsson/extrakit-learn#targetencoder) - Categorical feature engineering on a column based on target means.
 - [MultiColumnEncoder](https://github.com/simon-larsson/extrakit-learn#multicolumnencoder) - Apply a column encoder to multiple columns.
-- [FoldEstimator](https://github.com/simon-larsson/extrakit-learn#foldestimator) - K-fold on scikit estimator wrapped into an estimator.
-- [FoldLightGBM](https://github.com/simon-larsson/extrakit-learn#foldlightgbm) - K-fold on LGBM wrapped into an estimator.
-- [FoldXGBoost](https://github.com/simon-larsson/extrakit-learn#foldxgboost) - K-fold on XGBoost wrapped into an estimator.
+- [FoldEstimator](https://github.com/simon-larsson/extrakit-learn#foldestimator) - K-fold ensamble of scikit estimators wrapped into an estimator.
+- [FoldLightGBM](https://github.com/simon-larsson/extrakit-learn#foldlightgbm) - K-fold ensamble of LGBMs wrapped into an estimator.
+- [FoldXGBoost](https://github.com/simon-larsson/extrakit-learn#foldxgboost) - K-fold ensamble of XGBoosts wrapped into an estimator.
 - [StackClassifier](https://github.com/simon-larsson/extrakit-learn#stackclassifier) - Stack an ensemble of classifiers with a meta classifier.
 - [StackRegressor](https://github.com/simon-larsson/extrakit-learn#stackregressor) - Stack an ensemble of regressors with a meta regressor.
 - [compress_dataframe](https://github.com/simon-larsson/extrakit-learn#compress_dataframe) - Reduce memory of a Pandas dataframe.
